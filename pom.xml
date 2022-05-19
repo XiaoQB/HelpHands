@@ -15,6 +15,7 @@
         <module>helphands-stream-api</module>
         <module>helphands-stream-impl</module>
         <module>integration-tests</module>
+        <module>consumer-api</module>
     </modules>
 
     <build>
