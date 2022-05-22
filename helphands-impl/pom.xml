@@ -57,6 +57,7 @@
                 <artifactId>lagom-maven-plugin</artifactId>
                 <configuration>
                     <lagomService>true</lagomService>
+                    <cassandraPort>9042</cassandraPort>
                 </configuration>
             </plugin>
         </plugins>
