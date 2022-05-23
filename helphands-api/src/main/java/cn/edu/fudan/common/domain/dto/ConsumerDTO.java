@@ -36,4 +36,6 @@ public class ConsumerDTO {
         this.email = consumerParam.getEmail();
         this.geo = consumerParam.getGeo();
     }
+
+    public static final ConsumerDTO EMPTY = new ConsumerDTO("","","","","","");
 }
