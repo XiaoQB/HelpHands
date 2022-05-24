@@ -1,9 +1,8 @@
 package cn.edu.fudan;
 
 import akka.actor.typed.ActorRef;
-import cn.edu.fudan.common.DeleteStatus;
-import cn.edu.fudan.common.domain.dto.ConsumerDTO;
-import cn.edu.fudan.common.domain.param.ConsumerParam;
+import cn.edu.fudan.domain.ConsumerDTO;
+import cn.edu.fudan.domain.ConsumerParam;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;

@@ -1,22 +1,23 @@
-package cn.edu.fudan;
+package cn.edu.fudan.domain;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 /**
- * @author XiaoQuanbin
- * @date 2022/5/23
+ * @author fuwuchen
+ * @date 2022/5/19 16:30
  */
 @Data
 @JsonDeserialize
-public class ConsumerParam {
+public class ProviderParam {
 
     String id;
     String fields;
-
+    /**
+     * for put and post
+     */
     String name;
-    String address;
     String mobile;
-    String email;
-    String geo;
+    Long since;
+    Float rating;
 }

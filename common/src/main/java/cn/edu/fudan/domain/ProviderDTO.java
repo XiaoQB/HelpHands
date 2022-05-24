@@ -1,6 +1,5 @@
-package cn.edu.fudan.common.domain.dto;
+package cn.edu.fudan.domain;
 
-import cn.edu.fudan.common.domain.param.ProviderParam;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Value;
 

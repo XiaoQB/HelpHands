@@ -18,7 +18,7 @@
 <dependencies>
     <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>helphands-api</artifactId>
+        <artifactId>consumer-api</artifactId>
         <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -49,6 +49,10 @@
     <dependency>
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>cn.edu.fudan</groupId>
+        <artifactId>common</artifactId>
     </dependency>
 </dependencies>
 

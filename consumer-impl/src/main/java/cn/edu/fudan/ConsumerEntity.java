@@ -4,9 +4,8 @@ import akka.cluster.sharding.typed.javadsl.EntityContext;
 import akka.cluster.sharding.typed.javadsl.EntityTypeKey;
 import akka.persistence.typed.PersistenceId;
 import akka.persistence.typed.javadsl.*;
-import cn.edu.fudan.common.DeleteStatus;
-import cn.edu.fudan.common.domain.dto.ConsumerDTO;
-import cn.edu.fudan.common.domain.param.ConsumerParam;
+import cn.edu.fudan.domain.ConsumerDTO;
+import cn.edu.fudan.domain.ConsumerParam;
 
 import java.time.Instant;
 import java.util.Objects;

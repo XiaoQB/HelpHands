@@ -1,8 +1,8 @@
 package cn.edu.fudan.provider;
 
 import cn.edu.fudan.api.ProviderService;
-import cn.edu.fudan.common.domain.dto.ProviderDTO;
-import cn.edu.fudan.common.domain.param.ProviderParam;
+import cn.edu.fudan.domain.ProviderDTO;
+import cn.edu.fudan.domain.ProviderParam;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.testkit.ServiceTest;
 import org.junit.AfterClass;
