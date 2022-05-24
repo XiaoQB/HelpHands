@@ -73,7 +73,15 @@ public class ConsumerServiceImpl implements ConsumerService {
      */
     @Override
     public ServiceCall<ConsumerParam, ConsumerDTO> updateById(String id) {
-        return null;
+        return request -> {
+            request.setId(id);
+            EntityRef<ConsumerCommand> ref = entityRefFor(id);
+            return ref.
+                    <ConsumerCommand.Confirmation>ask(
+                            replyTo -> new ConsumerCommand.UpdateById(request, replyTo), askTimeout)
+                    .thenApply(this::handleConfirmation)
+                    .thenApply(accepted -> (ConsumerDTO) accepted.get());
+        };
     }
 
     /**
@@ -84,7 +92,14 @@ public class ConsumerServiceImpl implements ConsumerService {
      */
     @Override
     public ServiceCall<NotUsed, ConsumerDTO> findById(String id) {
-        return null;
+        return request -> {
+            EntityRef<ConsumerCommand> ref = entityRefFor(id);
+            return ref.
+                    <ConsumerCommand.Confirmation>ask(
+                            replyTo -> new ConsumerCommand.FindById(id, replyTo), askTimeout)
+                    .thenApply(this::handleConfirmation)
+                    .thenApply(accepted -> (ConsumerDTO) accepted.get());
+        };
     }
 
     /**
@@ -95,7 +110,14 @@ public class ConsumerServiceImpl implements ConsumerService {
      */
     @Override
     public ServiceCall<NotUsed, DeleteResult<String>> deleteById(String id) {
-        return null;
+        return request -> {
+            EntityRef<ConsumerCommand> ref = entityRefFor(id);
+            return ref.
+                    <ConsumerCommand.Confirmation>ask(
+                            replyTo -> new ConsumerCommand.DeleteById(id, replyTo),  askTimeout)
+                    .thenApply(this::handleConfirmation)
+                    .thenApply(accepted -> new DeleteResult<>((DeleteStatus)accepted.get() ,id));
+        };
     }
 
     /**
