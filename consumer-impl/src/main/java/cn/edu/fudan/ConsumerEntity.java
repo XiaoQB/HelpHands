@@ -4,8 +4,8 @@ import akka.cluster.sharding.typed.javadsl.EntityContext;
 import akka.cluster.sharding.typed.javadsl.EntityTypeKey;
 import akka.persistence.typed.PersistenceId;
 import akka.persistence.typed.javadsl.*;
-import cn.edu.fudan.domain.ConsumerDTO;
-import cn.edu.fudan.domain.ConsumerParam;
+import cn.edu.fudan.domain.consumer.ConsumerDTO;
+import cn.edu.fudan.domain.consumer.ConsumerParam;
 
 import java.time.Instant;
 import java.util.Objects;

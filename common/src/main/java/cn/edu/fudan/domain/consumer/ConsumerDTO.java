@@ -1,4 +1,4 @@
-package cn.edu.fudan.domain;
+package cn.edu.fudan.domain.consumer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Value;

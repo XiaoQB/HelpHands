@@ -1,6 +1,6 @@
 package cn.edu.fudan;
 
-import cn.edu.fudan.domain.ConsumerDTO;
+import cn.edu.fudan.domain.consumer.ConsumerDTO;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;

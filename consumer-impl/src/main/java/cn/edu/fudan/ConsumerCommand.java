@@ -1,8 +1,8 @@
 package cn.edu.fudan;
 
 import akka.actor.typed.ActorRef;
-import cn.edu.fudan.domain.ConsumerDTO;
-import cn.edu.fudan.domain.ConsumerParam;
+import cn.edu.fudan.domain.consumer.ConsumerDTO;
+import cn.edu.fudan.domain.consumer.ConsumerParam;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;

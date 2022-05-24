@@ -1,8 +1,8 @@
 package cn.edu.fudan;
 
 import akka.NotUsed;
-import cn.edu.fudan.domain.ConsumerDTO;
-import cn.edu.fudan.domain.ConsumerParam;
+import cn.edu.fudan.domain.consumer.ConsumerDTO;
+import cn.edu.fudan.domain.consumer.ConsumerParam;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
