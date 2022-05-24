@@ -1,4 +1,4 @@
-package cn.edu.fudan.consumer;
+package cn.edu.fudan;
 
 import cn.edu.fudan.api.ConsumerService;
 import com.google.inject.AbstractModule;

@@ -1,4 +1,4 @@
-package cn.edu.fudan.consumer;
+package cn.edu.fudan;
 
 import akka.NotUsed;
 import akka.cluster.sharding.typed.javadsl.ClusterSharding;
@@ -8,8 +8,6 @@ import cn.edu.fudan.api.ConsumerService;
 import cn.edu.fudan.common.DeleteResult;
 import cn.edu.fudan.common.domain.dto.ConsumerDTO;
 import cn.edu.fudan.common.domain.param.ConsumerParam;
-import cn.edu.fudan.provider.ProviderCommand;
-import cn.edu.fudan.provider.ProviderEntity;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.BadRequest;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
@@ -38,8 +36,8 @@ public class ConsumerServiceImpl implements ConsumerService {
         // register the Aggregate as a sharded entity
         this.clusterSharding.init(
                 Entity.of(
-                        ProviderEntity.ENTITY_TYPE_KEY,
-                        ProviderEntity::create
+                        ConsumerEntity.ENTITY_TYPE_KEY,
+                        ConsumerEntity::create
                 )
         );
     }
@@ -83,7 +81,7 @@ public class ConsumerServiceImpl implements ConsumerService {
     /**
      * Gets all the consumers based on request params
      *
-     * @param id
+     * @param id consumer id
      * @return list of ServiceComponentDTO
      */
     @Override
@@ -108,7 +106,7 @@ public class ConsumerServiceImpl implements ConsumerService {
      * @throws BadRequest if Confirmation is a Rejected
      */
     private ConsumerCommand.Accepted handleConfirmation(ConsumerCommand.Confirmation confirmation) {
-        if (confirmation instanceof ProviderCommand.Accepted) {
+        if (confirmation instanceof ConsumerCommand.Accepted) {
             return (ConsumerCommand.Accepted) confirmation;
         }
 

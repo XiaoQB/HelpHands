@@ -1,7 +1,6 @@
-package cn.edu.fudan.consumer;
+package cn.edu.fudan;
 
 import cn.edu.fudan.common.domain.dto.ConsumerDTO;
-import cn.edu.fudan.consumer.ConsumerEvent;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
@@ -30,13 +29,12 @@ public interface ConsumerEvent extends Jsonable, AggregateEvent<ConsumerEvent> {
     /**
      * An event that represents a change in greeting message.
      */
-    @SuppressWarnings("serial")
     @Value
     @JsonDeserialize
-    final class ConsumerAdded implements ConsumerEvent {
+    class ConsumerAdded implements ConsumerEvent {
 
-        public final ConsumerDTO consumerDTO;
-        public final Instant eventTime;
+        public ConsumerDTO consumerDTO;
+        public Instant eventTime;
 
         @JsonCreator
         public ConsumerAdded(ConsumerDTO consumerDTO, Instant eventTime) {
@@ -47,10 +45,10 @@ public interface ConsumerEvent extends Jsonable, AggregateEvent<ConsumerEvent> {
 
     @Value
     @JsonDeserialize
-    final class ConsumerUpdated implements ConsumerEvent {
+    class ConsumerUpdated implements ConsumerEvent {
 
-        public final ConsumerDTO consumerDTO;
-        public final Instant eventTime;
+        public ConsumerDTO consumerDTO;
+        public Instant eventTime;
 
         @JsonCreator
         public ConsumerUpdated(ConsumerDTO consumerDTO, Instant eventTime) {
@@ -61,10 +59,10 @@ public interface ConsumerEvent extends Jsonable, AggregateEvent<ConsumerEvent> {
 
     @Value
     @JsonDeserialize
-    final class ConsumerDeleted implements ConsumerEvent {
+    class ConsumerDeleted implements ConsumerEvent {
 
-        public final String consumerId;
-        public final Instant eventTime;
+        public String consumerId;
+        public Instant eventTime;
 
         @JsonCreator
         public ConsumerDeleted(String consumerId, Instant eventTime) {

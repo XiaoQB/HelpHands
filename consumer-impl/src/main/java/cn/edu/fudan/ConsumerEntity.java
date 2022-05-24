@@ -1,4 +1,4 @@
-package cn.edu.fudan.consumer;
+package cn.edu.fudan;
 
 import akka.cluster.sharding.typed.javadsl.EntityContext;
 import akka.cluster.sharding.typed.javadsl.EntityTypeKey;

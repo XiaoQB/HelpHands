@@ -1,7 +1,6 @@
-package cn.edu.fudan.consumer;
+package cn.edu.fudan;
 
 import cn.edu.fudan.common.domain.dto.ConsumerDTO;
-import cn.edu.fudan.consumer.ConsumerState;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.base.Preconditions;
 

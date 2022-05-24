@@ -1,13 +1,9 @@
-package cn.edu.fudan.consumer;
+package cn.edu.fudan;
 
 import akka.actor.typed.ActorRef;
 import cn.edu.fudan.common.DeleteStatus;
 import cn.edu.fudan.common.domain.dto.ConsumerDTO;
-import cn.edu.fudan.common.domain.dto.ProviderDTO;
 import cn.edu.fudan.common.domain.param.ConsumerParam;
-import cn.edu.fudan.common.domain.param.ConsumerParam;
-import cn.edu.fudan.consumer.ConsumerCommand;
-import cn.edu.fudan.provider.ProviderCommand;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
@@ -37,7 +33,7 @@ public interface ConsumerCommand extends Jsonable {
     @Value
     @JsonDeserialize
     class Rejected implements Confirmation {
-        public final String reason;
+        public String reason;
 
         @JsonCreator
         public Rejected(String reason) {
@@ -48,9 +44,9 @@ public interface ConsumerCommand extends Jsonable {
 
     @Value
     @JsonDeserialize
-    final class Add implements ConsumerCommand {
-        public final ConsumerParam consumerParam;
-        public final ActorRef<Confirmation> replyTo;
+    class Add implements ConsumerCommand {
+        public ConsumerParam consumerParam;
+        public ActorRef<Confirmation> replyTo;
 
         @JsonCreator
         Add(ConsumerParam consumerParam, ActorRef<Confirmation> replyTo) {
@@ -63,13 +59,10 @@ public interface ConsumerCommand extends Jsonable {
     /**
      * Reply type for a create service consumer command.
      */
-    /**
-     * Reply type for a create service provider command.
-     */
     @Value
     @JsonDeserialize
     class ReplyConsumer implements ConsumerCommand.Accepted<ConsumerDTO> {
-        public final ConsumerDTO consumerDTO;
+        public ConsumerDTO consumerDTO;
 
         @JsonCreator
         public ReplyConsumer(ConsumerDTO consumerDTO) {
@@ -86,9 +79,9 @@ public interface ConsumerCommand extends Jsonable {
 
     @Value
     @JsonDeserialize
-    final class FindById implements ConsumerCommand {
-        public final String consumerId;
-        public final ActorRef<Confirmation> replyTo;
+    class FindById implements ConsumerCommand {
+        public String consumerId;
+        public ActorRef<Confirmation> replyTo;
 
         @JsonCreator
         FindById(String consumerId, ActorRef<Confirmation> replyTo) {
@@ -100,9 +93,9 @@ public interface ConsumerCommand extends Jsonable {
 
     @Value
     @JsonDeserialize
-    final class UpdateById implements ConsumerCommand {
-        public final ConsumerParam consumerParam;
-        public final ActorRef<Confirmation> replyTo;
+    class UpdateById implements ConsumerCommand {
+        public ConsumerParam consumerParam;
+        public ActorRef<Confirmation> replyTo;
 
         @JsonCreator
         UpdateById(ConsumerParam consumerParam, ActorRef<Confirmation> replyTo) {
@@ -114,9 +107,9 @@ public interface ConsumerCommand extends Jsonable {
 
     @Value
     @JsonDeserialize
-    final class DeleteById implements ConsumerCommand {
-        public final String consumerId;
-        public final ActorRef<Confirmation> replyTo;
+    class DeleteById implements ConsumerCommand {
+        public String consumerId;
+        public ActorRef<Confirmation> replyTo;
 
         @JsonCreator
         DeleteById(String consumerId, ActorRef<Confirmation> replyTo) {
@@ -128,7 +121,7 @@ public interface ConsumerCommand extends Jsonable {
 
     @Value
     @JsonDeserialize
-    final class Deleted implements ConsumerCommand.Accepted<DeleteStatus> {
+    class Deleted implements ConsumerCommand.Accepted<DeleteStatus> {
 
         public DeleteStatus status;
 
