@@ -1,19 +1,25 @@
 package cn.edu.fudan.provider;
 
 import akka.NotUsed;
+import akka.actor.typed.ActorRef;
+import akka.cluster.sharding.typed.ClusterShardingQuery;
 import akka.cluster.sharding.typed.javadsl.ClusterSharding;
 import akka.cluster.sharding.typed.javadsl.Entity;
 import akka.cluster.sharding.typed.javadsl.EntityRef;
+import akka.stream.javadsl.Source;
 import cn.edu.fudan.provider.api.ProviderService;
 import cn.edu.fudan.provider.domain.ProviderDTO;
 import cn.edu.fudan.provider.domain.ProviderParam;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.BadRequest;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
+import com.lightbend.lagom.javadsl.persistence.ReadSide;
+import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 
 import javax.inject.Inject;
 import java.time.Duration;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author fuwuchen
@@ -23,15 +29,21 @@ public class ProviderServiceImpl implements ProviderService {
 
     private final PersistentEntityRegistry persistentEntityRegistry;
 
+    private final CassandraSession cassandraSession;
+
     private final Duration askTimeout = Duration.ofSeconds(5);
-    private ClusterSharding clusterSharding;
+    private final ClusterSharding clusterSharding;
 
     @Inject
-    public ProviderServiceImpl(PersistentEntityRegistry persistentEntityRegistry, ClusterSharding clusterSharding){
+    public ProviderServiceImpl(PersistentEntityRegistry persistentEntityRegistry,
+                               CassandraSession cassandraSession,
+                               ClusterSharding clusterSharding,
+                               ReadSide readSide) {
+        this.cassandraSession = cassandraSession;
         this.clusterSharding = clusterSharding;
         // The persistent entity registry is only required to build an event stream for the TopicProducer
         this.persistentEntityRegistry = persistentEntityRegistry;
-
+        readSide.register(ProviderEventProcessor.class);
         // register the Aggregate as a sharded entity
         this.clusterSharding.init(
                 Entity.of(
@@ -112,6 +124,34 @@ public class ProviderServiceImpl implements ProviderService {
                     replyTo -> new ProviderCommand.FindById(id, replyTo), askTimeout)
                     .thenApply(this::handleConfirmation)
                     .thenApply(accepted -> (ProviderDTO) accepted.get());
+        };
+    }
+
+    /**
+     * Gets all the providers
+     *
+     * @return list of providers
+     */
+    @Override
+    public ServiceCall<NotUsed, Source<ProviderDTO, ?>> findAll() {
+        return request -> {
+            Source<ProviderDTO, ?> summaries =
+                    cassandraSession
+                            .select(String.format("SELECT id, name, mobile, since, rating FROM %s;",
+                                    ProviderConfig.TABLE_NAME))
+                            .map(row -> {
+                                System.out.println(row);
+                                return new ProviderDTO(
+                                        row.getString("id"),
+                                        row.getString("name"),
+                                        row.getString("mobile"),
+                                        row.getLong("since"),
+                                        row.getFloat("rating")
+                                );
+                            })
+                            ;
+
+            return CompletableFuture.completedFuture(summaries);
         };
     }
 

@@ -37,6 +37,13 @@
                 <groupId>com.lightbend.lagom</groupId>
                 <artifactId>lagom-maven-plugin</artifactId>
                 <version>${lagom.version}</version>
+                <configuration>
+                    <cassandraPort>4000</cassandraPort>
+                    <serviceLocatorAddress>0.0.0.0</serviceLocatorAddress>
+                    <serviceLocatorPort>9008</serviceLocatorPort>
+                    <serviceGatewayAddress>0.0.0.0</serviceGatewayAddress>
+                    <serviceGatewayPort>9000</serviceGatewayPort>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
