@@ -1,6 +1,7 @@
 package cn.edu.fudan.provider.api;
 
 import akka.NotUsed;
+import akka.stream.javadsl.Source;
 import cn.edu.fudan.provider.DeleteResult;
 import cn.edu.fudan.provider.domain.ProviderDTO;
 import cn.edu.fudan.provider.domain.ProviderParam;
@@ -9,6 +10,7 @@ import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.Method;
 
+import static com.lightbend.lagom.javadsl.api.Service.named;
 import static com.lightbend.lagom.javadsl.api.Service.restCall;
 
 /**
@@ -37,10 +39,17 @@ public interface ProviderService extends Service {
     ServiceCall<ProviderParam, ProviderDTO> rateById(String id);
 
     /**
-     * Gets all the providers based on request params
+     * Gets the provider by id
+     * @param id uuid of provider
      * @return list of ServiceComponentDTO
      */
     ServiceCall<NotUsed, ProviderDTO> findById(String id);
+
+    /**
+     * Gets all the providers
+     * @return list of providers
+     */
+    ServiceCall<NotUsed, Source<ProviderDTO, ?>> findAll();
 
     /**
      * Deletes the specified provider
@@ -55,12 +64,13 @@ public interface ProviderService extends Service {
      */
     @Override
     default Descriptor descriptor() {
-        return Service.named("provider").withCalls(
-                Service.restCall(Method.POST, "/providers", this::add),
-                Service.restCall(Method.PUT, "/providers/:id", this::updateById),
-                Service.restCall(Method.PUT, "/providers/:id/rate", this::rateById),
-                Service.restCall(Method.GET, "/providers/:id", this::findById),
-                Service.restCall(Method.DELETE, "/providers/:id", this::deleteById)
+        return named("provider").withCalls(
+                restCall(Method.POST, "/providers", this::add),
+                restCall(Method.PUT, "/providers/:id", this::updateById),
+                restCall(Method.PUT, "/providers/:id/rate", this::rateById),
+                restCall(Method.GET, "/providers/:id", this::findById),
+                restCall(Method.DELETE, "/providers/:id", this::deleteById),
+                restCall(Method.GET, "/providers", this::findAll)
         ).withAutoAcl(true);
     }
 }
