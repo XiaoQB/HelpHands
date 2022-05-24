@@ -1,15 +1,14 @@
-package cn.edu.fudan.api;
+package cn.edu.fudan.provider.api;
 
 import akka.NotUsed;
-import cn.edu.fudan.DeleteResult;
-import cn.edu.fudan.domain.ProviderDTO;
-import cn.edu.fudan.domain.ProviderParam;
+import cn.edu.fudan.provider.DeleteResult;
+import cn.edu.fudan.provider.domain.ProviderDTO;
+import cn.edu.fudan.provider.domain.ProviderParam;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.Method;
 
-import static com.lightbend.lagom.javadsl.api.Service.named;
 import static com.lightbend.lagom.javadsl.api.Service.restCall;
 
 /**
@@ -56,12 +55,12 @@ public interface ProviderService extends Service {
      */
     @Override
     default Descriptor descriptor() {
-        return named("provider").withCalls(
-                restCall(Method.POST, "/providers", this::add),
-                restCall(Method.PUT, "/providers/:id", this::updateById),
-                restCall(Method.PUT, "/providers/:id/rate", this::rateById),
-                restCall(Method.GET, "/providers/:id", this::findById),
-                restCall(Method.DELETE, "/providers/:id", this::deleteById)
+        return Service.named("provider").withCalls(
+                Service.restCall(Method.POST, "/providers", this::add),
+                Service.restCall(Method.PUT, "/providers/:id", this::updateById),
+                Service.restCall(Method.PUT, "/providers/:id/rate", this::rateById),
+                Service.restCall(Method.GET, "/providers/:id", this::findById),
+                Service.restCall(Method.DELETE, "/providers/:id", this::deleteById)
         ).withAutoAcl(true);
     }
 }
