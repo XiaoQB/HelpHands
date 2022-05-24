@@ -1,6 +1,6 @@
 package cn.edu.fudan.provider;
 
-import cn.edu.fudan.domain.ProviderDTO;
+import cn.edu.fudan.provider.domain.ProviderDTO;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
@@ -48,11 +48,11 @@ public interface ProviderEvent extends Jsonable, AggregateEvent<ProviderEvent> {
     @JsonDeserialize
     final class ProviderUpdated implements ProviderEvent {
 
-        public final cn.edu.fudan.domain.ProviderDTO providerDTO;
+        public final ProviderDTO providerDTO;
         public final Instant eventTime;
 
         @JsonCreator
-        public ProviderUpdated(cn.edu.fudan.domain.ProviderDTO providerDTO, Instant eventTime) {
+        public ProviderUpdated(ProviderDTO providerDTO, Instant eventTime) {
             this.providerDTO = Preconditions.checkNotNull(providerDTO, "providerDTO");
             this.eventTime = Preconditions.checkNotNull(eventTime, "eventTime");
         }

@@ -18,6 +18,8 @@
         <module>consumer-api</module>
         <module>consumer-impl</module>
         <module>common</module>
+        <module>provider-api</module>
+        <module>provider-impl</module>
     </modules>
 
     <build>

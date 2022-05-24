@@ -1,9 +1,8 @@
 package cn.edu.fudan.provider;
 
 import akka.actor.typed.ActorRef;
-import cn.edu.fudan.DeleteStatus;
-import cn.edu.fudan.domain.ProviderDTO;
-import cn.edu.fudan.domain.ProviderParam;
+import cn.edu.fudan.provider.domain.ProviderDTO;
+import cn.edu.fudan.provider.domain.ProviderParam;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
