@@ -6,9 +6,12 @@ import akka.persistence.typed.PersistenceId;
 import akka.persistence.typed.javadsl.*;
 import cn.edu.fudan.provider.domain.ProviderDTO;
 import cn.edu.fudan.provider.domain.ProviderParam;
+import com.lightbend.lagom.javadsl.persistence.AkkaTaggerAdapter;
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
 
 /**
  * @author fuwuchen
@@ -23,6 +26,7 @@ public class ProviderEntity
 
     final private EntityContext<ProviderCommand> entityContext;
     final private String entityId;
+    private final Function<ProviderEvent, Set<String>> tagger;
 
     ProviderEntity(EntityContext<ProviderCommand> entityContext) {
         super(
@@ -33,8 +37,18 @@ public class ProviderEntity
         );
         this.entityContext = entityContext;
         this.entityId = entityContext.getEntityId();
+        this.tagger = AkkaTaggerAdapter.fromLagom(entityContext, ProviderEvent.TAG);
     }
 
+    @Override
+    public Set<String> tagsFor(ProviderEvent providerEvent) {
+        return tagger.apply(providerEvent);
+    }
+
+    @Override
+    public RetentionCriteria retentionCriteria() {
+        return RetentionCriteria.snapshotEvery(100, 2);
+    }
 
     public static ProviderEntity create(EntityContext<ProviderCommand> entityContext) {
         return new ProviderEntity(entityContext);
