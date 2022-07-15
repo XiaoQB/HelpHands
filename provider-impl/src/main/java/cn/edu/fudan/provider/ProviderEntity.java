@@ -5,8 +5,9 @@ import akka.cluster.sharding.typed.javadsl.EntityContext;
 import akka.cluster.sharding.typed.javadsl.EntityTypeKey;
 import akka.persistence.typed.PersistenceId;
 import akka.persistence.typed.javadsl.*;
-import cn.edu.fudan.provider.domain.ProviderDTO;
-import cn.edu.fudan.provider.domain.ProviderParam;
+import cn.edu.fudan.DeleteStatus;
+import cn.edu.fudan.provider.api.ProviderDTO;
+import cn.edu.fudan.provider.api.ProviderParam;
 import com.lightbend.lagom.javadsl.persistence.AkkaTaggerAdapter;
 
 import java.time.Duration;
@@ -35,7 +36,7 @@ public class ProviderEntity
                 PersistenceId.of(
                         entityContext.getEntityTypeKey().name(),
                         entityContext.getEntityId(),
-                        ""
+                        "|"
                 ),
                 SupervisorStrategy.restartWithBackoff(
                         Duration.ofSeconds(2), Duration.ofSeconds(30), 0.2)

@@ -1,6 +1,6 @@
 package cn.edu.fudan.provider;
 
-import cn.edu.fudan.provider.domain.ProviderDTO;
+import cn.edu.fudan.provider.api.ProviderDTO;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
@@ -29,13 +29,12 @@ public interface ProviderEvent extends Jsonable, AggregateEvent<ProviderEvent> {
     /**
      * An event that represents a change in greeting message.
      */
-    @SuppressWarnings("serial")
     @Value
     @JsonDeserialize
-    final class ProviderAdded implements ProviderEvent {
+    class ProviderAdded implements ProviderEvent {
 
-        public final ProviderDTO providerDTO;
-        public final Instant eventTime;
+        public ProviderDTO providerDTO;
+        public Instant eventTime;
 
         @JsonCreator
         public ProviderAdded(ProviderDTO providerDTO, Instant eventTime) {
@@ -46,10 +45,10 @@ public interface ProviderEvent extends Jsonable, AggregateEvent<ProviderEvent> {
 
     @Value
     @JsonDeserialize
-    final class ProviderUpdated implements ProviderEvent {
+    class ProviderUpdated implements ProviderEvent {
 
-        public final ProviderDTO providerDTO;
-        public final Instant eventTime;
+        public ProviderDTO providerDTO;
+        public Instant eventTime;
 
         @JsonCreator
         public ProviderUpdated(ProviderDTO providerDTO, Instant eventTime) {
@@ -60,10 +59,10 @@ public interface ProviderEvent extends Jsonable, AggregateEvent<ProviderEvent> {
 
     @Value
     @JsonDeserialize
-    final class ProviderDeleted implements ProviderEvent {
+    class ProviderDeleted implements ProviderEvent {
 
-        public final String providerId;
-        public final Instant eventTime;
+        public String providerId;
+        public Instant eventTime;
 
         @JsonCreator
         public ProviderDeleted(String providerId, Instant eventTime) {
@@ -72,6 +71,10 @@ public interface ProviderEvent extends Jsonable, AggregateEvent<ProviderEvent> {
         }
     }
 
+    /**
+     * provider event tags
+     * @return tags
+     */
     @Override
     default AggregateEventTagger<ProviderEvent> aggregateTag() {
         return TAG;

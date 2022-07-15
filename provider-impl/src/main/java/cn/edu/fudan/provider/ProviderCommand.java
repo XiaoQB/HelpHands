@@ -1,8 +1,9 @@
 package cn.edu.fudan.provider;
 
 import akka.actor.typed.ActorRef;
-import cn.edu.fudan.provider.domain.ProviderDTO;
-import cn.edu.fudan.provider.domain.ProviderParam;
+import cn.edu.fudan.DeleteStatus;
+import cn.edu.fudan.provider.api.ProviderDTO;
+import cn.edu.fudan.provider.api.ProviderParam;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
@@ -33,7 +34,7 @@ public interface ProviderCommand extends Jsonable {
     @Value
     @JsonDeserialize
     class Rejected implements Confirmation {
-        public final String reason;
+        public String reason;
 
         @JsonCreator
         public Rejected(String reason) {
@@ -43,9 +44,9 @@ public interface ProviderCommand extends Jsonable {
 
     @Value
     @JsonDeserialize
-    final class Add implements ProviderCommand {
-        public final ProviderParam providerParam;
-        public final ActorRef<Confirmation> replyTo;
+    class Add implements ProviderCommand {
+        public ProviderParam providerParam;
+        public ActorRef<Confirmation> replyTo;
 
         @JsonCreator
         Add(ProviderParam providerParam, ActorRef<Confirmation> replyTo) {
@@ -61,7 +62,7 @@ public interface ProviderCommand extends Jsonable {
     @Value
     @JsonDeserialize
     class ReplyProvider implements Accepted<ProviderDTO> {
-        public final ProviderDTO providerDto;
+        public ProviderDTO providerDto;
 
         @JsonCreator
         public ReplyProvider(ProviderDTO providerDto) {
@@ -76,9 +77,9 @@ public interface ProviderCommand extends Jsonable {
 
     @Value
     @JsonDeserialize
-    final class FindById implements ProviderCommand {
-        public final String providerId;
-        public final ActorRef<Confirmation> replyTo;
+    class FindById implements ProviderCommand {
+        public String providerId;
+        public ActorRef<Confirmation> replyTo;
 
         @JsonCreator
         FindById(String providerId, ActorRef<Confirmation> replyTo) {
@@ -90,9 +91,9 @@ public interface ProviderCommand extends Jsonable {
 
     @Value
     @JsonDeserialize
-    final class UpdateById implements ProviderCommand {
-        public final ProviderParam providerParam;
-        public final ActorRef<Confirmation> replyTo;
+    class UpdateById implements ProviderCommand {
+        public ProviderParam providerParam;
+        public ActorRef<Confirmation> replyTo;
 
         @JsonCreator
         UpdateById(ProviderParam providerParam, ActorRef<Confirmation> replyTo) {
@@ -104,9 +105,9 @@ public interface ProviderCommand extends Jsonable {
 
     @Value
     @JsonDeserialize
-    final class DeleteById implements ProviderCommand {
-        public final String providerId;
-        public final ActorRef<Confirmation> replyTo;
+    class DeleteById implements ProviderCommand {
+        public String providerId;
+        public ActorRef<Confirmation> replyTo;
 
         @JsonCreator
         DeleteById(String providerId, ActorRef<Confirmation> replyTo) {
@@ -118,7 +119,7 @@ public interface ProviderCommand extends Jsonable {
 
     @Value
     @JsonDeserialize
-    final class Deleted implements Accepted<DeleteStatus> {
+    class Deleted implements Accepted<DeleteStatus> {
 
         public DeleteStatus status;
 

@@ -1,8 +1,8 @@
 package cn.edu.fudan.provider;
 
-import cn.edu.fudan.api.ProviderService;
-import cn.edu.fudan.domain.ProviderDTO;
-import cn.edu.fudan.domain.ProviderParam;
+import cn.edu.fudan.provider.api.ProviderDTO;
+import cn.edu.fudan.provider.api.ProviderParam;
+import cn.edu.fudan.provider.api.ProviderService;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.testkit.ServiceTest;
 import org.junit.AfterClass;
@@ -26,7 +26,7 @@ public class ProviderServiceTest {
         server = ServiceTest.startServer(
                 defaultSetup()
                         .withCassandra()
-//                        .withCluster(true)
+                        .withCluster(true)
         );
     }
 
@@ -40,7 +40,7 @@ public class ProviderServiceTest {
 
     @Test
     public void shouldStoreNewProvider() throws Exception {
-        ProviderService service = server.client(ProviderServiceImpl.class);
+        ProviderService service = server.client(ProviderService.class);
 
         ProviderParam request = new ProviderParam();
         request.setName("test");

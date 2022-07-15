@@ -1,6 +1,6 @@
 package cn.edu.fudan.provider;
 
-import cn.edu.fudan.provider.domain.ProviderDTO;
+import cn.edu.fudan.provider.api.ProviderDTO;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
@@ -16,7 +16,7 @@ import java.util.Objects;
 @Value
 @JsonDeserialize
 public class ProviderState implements CompressedJsonable {
-    public final ProviderDTO provider;
+    public ProviderDTO provider;
 
     @JsonCreator
     ProviderState(ProviderDTO provider) {

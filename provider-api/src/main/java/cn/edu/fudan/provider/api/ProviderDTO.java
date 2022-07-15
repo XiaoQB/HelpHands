@@ -1,4 +1,4 @@
-package cn.edu.fudan.provider.domain;
+package cn.edu.fudan.provider.api;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Value;
@@ -34,4 +34,15 @@ public class ProviderDTO {
     }
 
     public static final ProviderDTO EMPTY = new ProviderDTO("", "", "", 0L, 0.0f);
+
+    @Override
+    public String toString() {
+        return "ProviderDTO{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", since=" + since +
+                ", rating=" + rating +
+                '}';
+    }
 }

@@ -1,7 +1,7 @@
 package cn.edu.fudan.provider;
 
 import akka.Done;
-import cn.edu.fudan.provider.domain.ProviderDTO;
+import cn.edu.fudan.provider.api.ProviderDTO;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
 import com.google.inject.Inject;
@@ -55,7 +55,6 @@ public class ProviderEventProcessor extends ReadSideProcessor<ProviderEvent> {
         BoundStatement bindDeleteProvider = deleteProvider.bind(
                 providerDeleted.getProviderId()
         );
-//        bindDeleteProvider.setString("id", );
         return completedStatements(Arrays.asList(bindDeleteProvider));
     }
 
@@ -69,11 +68,6 @@ public class ProviderEventProcessor extends ReadSideProcessor<ProviderEvent> {
                 providerToUpdate.getRating(),
                 providerToUpdate.getId()
         );
-//        bindUpdateProvider.setString("name", providerToUpdate.getName());
-//        bindUpdateProvider.setString("mobile", providerToUpdate.getMobile());
-//        bindUpdateProvider.setLong("since", providerToUpdate.getSince());
-//        bindUpdateProvider.setFloat("rating", providerToUpdate.getRating());
-//        bindUpdateProvider.setString("id", providerToUpdate.getId());
         return completedStatements(Arrays.asList(bindUpdateProvider));
     }
 
@@ -88,11 +82,6 @@ public class ProviderEventProcessor extends ReadSideProcessor<ProviderEvent> {
                 providerToAdd.getSince(),
                 providerToAdd.getRating()
         );
-//        bindAddProvider.setString("id", providerToAdd.getId());
-//        bindAddProvider.setString("name", providerToAdd.getName());
-//        bindAddProvider.setString("mobile", providerToAdd.getMobile());
-//        bindAddProvider.setLong("since", providerToAdd.getSince());
-//        bindAddProvider.setFloat("rating", providerToAdd.getRating());
         return completedStatements(Arrays.asList(bindAddProvider));
     }
 

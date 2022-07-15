@@ -2,9 +2,7 @@ package cn.edu.fudan.provider.api;
 
 import akka.NotUsed;
 import akka.stream.javadsl.Source;
-import cn.edu.fudan.provider.DeleteResult;
-import cn.edu.fudan.provider.domain.ProviderDTO;
-import cn.edu.fudan.provider.domain.ProviderParam;
+import cn.edu.fudan.DeleteResult;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
