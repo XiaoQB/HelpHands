@@ -19,7 +19,10 @@ import java.time.Instant;
         @JsonSubTypes.Type(value = ProviderEventPublish.ProviderDeleted.class, name = "provider-deleted")
 })
 public interface ProviderEventPublish {
-
+    /**
+     * topic 消息分区字段
+     * @return uuid of provider by default
+     */
     String getPartitionKey();
 
     /**
