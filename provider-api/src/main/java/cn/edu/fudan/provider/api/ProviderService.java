@@ -3,13 +3,15 @@ package cn.edu.fudan.provider.api;
 import akka.NotUsed;
 import akka.stream.javadsl.Source;
 import cn.edu.fudan.DeleteResult;
+import cn.edu.fudan.provider.domain.ProviderEventPublish;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.api.broker.Topic;
+import com.lightbend.lagom.javadsl.api.broker.kafka.KafkaProperties;
 import com.lightbend.lagom.javadsl.api.transport.Method;
 
-import static com.lightbend.lagom.javadsl.api.Service.named;
-import static com.lightbend.lagom.javadsl.api.Service.restCall;
+import static com.lightbend.lagom.javadsl.api.Service.*;
 
 /**
  * @author fuwuchen
@@ -57,6 +59,11 @@ public interface ProviderService extends Service {
     ServiceCall<NotUsed, DeleteResult<String>> deleteById(String id);
 
     /**
+     * publish provider events
+     * @return provider topic
+     */
+    Topic<ProviderEventPublish> providerEvent();
+    /**
      * route definition
      * @return descriptor
      */
@@ -69,6 +76,10 @@ public interface ProviderService extends Service {
                 restCall(Method.GET, "/providers/:id", this::findById),
                 restCall(Method.DELETE, "/providers/:id", this::deleteById),
                 restCall(Method.GET, "/providers", this::findAll)
-        ).withAutoAcl(true);
+                ).withTopics(
+                        topic("provider-events", this::providerEvent)
+                                .withProperty(KafkaProperties.partitionKeyStrategy(),
+                                        ProviderEventPublish::getPartitionKey))
+                .withAutoAcl(true);
     }
 }

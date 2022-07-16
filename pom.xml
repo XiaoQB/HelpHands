@@ -22,6 +22,8 @@
         <module>provider-impl</module>
         <module>service-api</module>
         <module>service-impl</module>
+        <module>lookup-api</module>
+        <module>lookup-impl</module>
     </modules>
 
     <build>
@@ -45,6 +47,8 @@
                     <serviceLocatorPort>9008</serviceLocatorPort>
                     <serviceGatewayAddress>0.0.0.0</serviceGatewayAddress>
                     <serviceGatewayPort>9000</serviceGatewayPort>
+                    <kafkaPort>9092</kafkaPort>
+                    <zookeeperPort>2181</zookeeperPort>
                 </configuration>
             </plugin>
             <plugin>
