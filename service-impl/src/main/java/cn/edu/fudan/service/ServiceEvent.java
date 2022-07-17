@@ -1,4 +1,4 @@
-package cn.edu.fudan.provider;
+package cn.edu.fudan.service;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -16,66 +16,67 @@ import java.time.Instant;
  * @author fuwuchen
  * @date 2022/5/19 18:19
  */
-public interface ProviderEvent extends Jsonable, AggregateEvent<ProviderEvent> {
+public interface ServiceEvent extends Jsonable, AggregateEvent<ServiceEvent> {
     /**
      * Tags are used for getting and publishing streams of events. Each event
      * will have this tag, and in this case, we are partitioning the tags into
      * 4 shards, which means we can have 4 concurrent processors/publishers of
      * events.
      */
-    AggregateEventShards<ProviderEvent> TAG = AggregateEventTag.sharded(ProviderEvent.class, 4);
+    AggregateEventShards<ServiceEvent> TAG = AggregateEventTag.sharded(
+            ServiceEvent.class, 4);
 
     /**
      * An event that represents a change in greeting message.
      */
     @Value
     @JsonDeserialize
-    class ProviderAdded implements ProviderEvent {
+    class ServiceAdded implements ServiceEvent {
 
-        public ProviderDTO providerDTO;
+        public ServiceDTO serviceDTO;
         public Instant eventTime;
 
         @JsonCreator
-        public ProviderAdded(ProviderDTO providerDTO, Instant eventTime) {
-            this.providerDTO = Preconditions.checkNotNull(providerDTO, "providerDTO");
+        public ServiceAdded(ServiceDTO serviceDTO, Instant eventTime) {
+            this.serviceDTO = Preconditions.checkNotNull(serviceDTO, "serviceDTO");
             this.eventTime = Preconditions.checkNotNull(eventTime, "eventTime");
         }
     }
 
     @Value
     @JsonDeserialize
-    class ProviderUpdated implements ProviderEvent {
+    class ServiceUpdated implements ServiceEvent {
 
-        public ProviderDTO providerDTO;
+        public ServiceDTO serviceDTO;
         public Instant eventTime;
 
         @JsonCreator
-        public ProviderUpdated(ProviderDTO providerDTO, Instant eventTime) {
-            this.providerDTO = Preconditions.checkNotNull(providerDTO, "providerDTO");
+        public ServiceUpdated(ServiceDTO serviceDTO, Instant eventTime) {
+            this.serviceDTO = Preconditions.checkNotNull(serviceDTO, "serviceDTO");
             this.eventTime = Preconditions.checkNotNull(eventTime, "eventTime");
         }
     }
 
     @Value
     @JsonDeserialize
-    class ProviderDeleted implements ProviderEvent {
+    class ServiceDeleted implements ServiceEvent {
 
-        public String providerId;
+        public String serviceId;
         public Instant eventTime;
 
         @JsonCreator
-        public ProviderDeleted(String providerId, Instant eventTime) {
-            this.providerId = Preconditions.checkNotNull(providerId, "providerId");
+        public ServiceDeleted(String serviceId, Instant eventTime) {
+            this.serviceId = Preconditions.checkNotNull(serviceId, "serviceId");
             this.eventTime = Preconditions.checkNotNull(eventTime, "eventTime");
         }
     }
 
     /**
-     * provider event tags
-     * @return tags
+     * provide tags for read-side
+     * @return AggregateEventShards
      */
     @Override
-    default AggregateEventTagger<ProviderEvent> aggregateTag() {
+    default AggregateEventTagger<ServiceEvent> aggregateTag() {
         return TAG;
     }
 }

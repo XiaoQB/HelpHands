@@ -20,6 +20,10 @@
         <module>common</module>
         <module>provider-api</module>
         <module>provider-impl</module>
+        <module>service-api</module>
+        <module>service-impl</module>
+        <module>lookup-api</module>
+        <module>lookup-impl</module>
         <module>order-api</module>
         <module>order-impl</module>
     </modules>

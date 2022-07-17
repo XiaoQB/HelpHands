@@ -1,4 +1,4 @@
-package cn.edu.fudan.provider;
+package cn.edu.fudan.service;
 
 import akka.actor.typed.ActorRef;
 import cn.edu.fudan.DeleteStatus;
@@ -12,7 +12,7 @@ import lombok.Value;
  * @author fuwuchen
  * @date 2022/5/19 18:19
  */
-public interface ProviderCommand extends Jsonable {
+public interface ServiceCommand extends Jsonable {
 
     /**
      * Super interface for Accepted/Rejected replies used by Add
@@ -42,14 +42,15 @@ public interface ProviderCommand extends Jsonable {
 
     @Value
     @JsonDeserialize
-    class Add implements ProviderCommand {
-        public ProviderParam providerParam;
+    class Add implements ServiceCommand {
+        public ServiceParam serviceParam;
         public ActorRef<Confirmation> replyTo;
 
         @JsonCreator
-        Add(ProviderParam providerParam, ActorRef<Confirmation> replyTo) {
+        Add(ServiceParam serviceParam, ActorRef<Confirmation> replyTo) {
             // 可以检查参数
-            this.providerParam = Preconditions.checkNotNull(providerParam, "provider param cannot be null");
+            this.serviceParam = Preconditions.checkNotNull(
+                    serviceParam, "service param cannot be null");
             this.replyTo = replyTo;
         }
     }
@@ -59,58 +60,61 @@ public interface ProviderCommand extends Jsonable {
      */
     @Value
     @JsonDeserialize
-    class ReplyProvider implements Accepted<ProviderDTO> {
-        public ProviderDTO providerDto;
+    class ReplyService implements Accepted<ServiceDTO> {
+        public ServiceDTO serviceParam;
 
         @JsonCreator
-        public ReplyProvider(ProviderDTO providerDto) {
-            this.providerDto = providerDto;
+        public ReplyService(ServiceDTO serviceParam) {
+            this.serviceParam = serviceParam;
         }
 
         @Override
-        public ProviderDTO get() {
-            return providerDto;
+        public ServiceDTO get() {
+            return serviceParam;
         }
     }
 
     @Value
     @JsonDeserialize
-    class FindById implements ProviderCommand {
-        public String providerId;
+    class FindById implements ServiceCommand {
+        public String serviceId;
         public ActorRef<Confirmation> replyTo;
 
         @JsonCreator
-        FindById(String providerId, ActorRef<Confirmation> replyTo) {
+        FindById(String serviceId, ActorRef<Confirmation> replyTo) {
             // 可以检查参数
-            this.providerId = Preconditions.checkNotNull(providerId, "provider param cannot be null");
+            this.serviceId = Preconditions.checkNotNull(
+                    serviceId, "service param cannot be null");
             this.replyTo = replyTo;
         }
     }
 
     @Value
     @JsonDeserialize
-    class UpdateById implements ProviderCommand {
-        public ProviderParam providerParam;
+    class UpdateById implements ServiceCommand {
+        public ServiceParam serviceParam;
         public ActorRef<Confirmation> replyTo;
 
         @JsonCreator
-        UpdateById(ProviderParam providerParam, ActorRef<Confirmation> replyTo) {
+        UpdateById(ServiceParam serviceParam, ActorRef<Confirmation> replyTo) {
             // 可以检查参数
-            this.providerParam = Preconditions.checkNotNull(providerParam, "provider param cannot be null");
+            this.serviceParam = Preconditions.checkNotNull(
+                    serviceParam, "service param cannot be null");
             this.replyTo = replyTo;
         }
     }
 
     @Value
     @JsonDeserialize
-    class DeleteById implements ProviderCommand {
-        public String providerId;
+    class DeleteById implements ServiceCommand {
+        public String serviceId;
         public ActorRef<Confirmation> replyTo;
 
         @JsonCreator
-        DeleteById(String providerId, ActorRef<Confirmation> replyTo) {
+        DeleteById(String serviceId, ActorRef<Confirmation> replyTo) {
             // 可以检查参数
-            this.providerId = Preconditions.checkNotNull(providerId, "provider param cannot be null");
+            this.serviceId = Preconditions.checkNotNull(
+                    serviceId, "service id cannot be null");
             this.replyTo = replyTo;
         }
     }

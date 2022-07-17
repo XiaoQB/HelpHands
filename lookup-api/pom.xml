@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>provider-impl</artifactId>
+    <artifactId>lookup-api</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -22,32 +22,16 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>common</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>provider-api</artifactId>
+            <artifactId>service-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.lightbend.lagom</groupId>
-            <artifactId>lagom-javadsl-server_${scala.binary.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.lightbend.lagom</groupId>
-            <artifactId>lagom-javadsl-persistence-cassandra_${scala.binary.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.lightbend.lagom</groupId>
-            <artifactId>lagom-logback_${scala.binary.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.typesafe.play</groupId>
-            <artifactId>play-akka-http-server_${scala.binary.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.lightbend.lagom</groupId>
-            <artifactId>lagom-javadsl-testkit_${scala.binary.version}</artifactId>
-            <scope>test</scope>
+            <artifactId>lagom-javadsl-api_${scala.binary.version}</artifactId>
         </dependency>
         <dependency>
             <groupId>com.lightbend.lagom</groupId>
@@ -58,17 +42,5 @@
             <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.lightbend.lagom</groupId>
-                <artifactId>lagom-maven-plugin</artifactId>
-                <configuration>
-                    <lagomService>true</lagomService>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

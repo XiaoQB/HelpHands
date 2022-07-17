@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>provider-impl</artifactId>
+    <artifactId>lookup-impl</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -25,7 +25,17 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>lookup-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>provider-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>service-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -49,9 +59,13 @@
             <artifactId>lagom-javadsl-testkit_${scala.binary.version}</artifactId>
             <scope>test</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.lightbend.lagom</groupId>-->
+<!--            <artifactId>lagom-javadsl-kafka-broker_${scala.binary.version}</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.lightbend.lagom</groupId>
-            <artifactId>lagom-javadsl-kafka-broker_${scala.binary.version}</artifactId>
+            <artifactId>lagom-javadsl-kafka-client_${scala.binary.version}</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -70,5 +84,6 @@
             </plugin>
         </plugins>
     </build>
+
 
 </project>

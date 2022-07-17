@@ -1,17 +1,17 @@
 package cn.edu.fudan.provider;
 
 import akka.NotUsed;
-import akka.actor.typed.ActorRef;
-import akka.cluster.sharding.typed.ClusterShardingQuery;
 import akka.cluster.sharding.typed.javadsl.ClusterSharding;
 import akka.cluster.sharding.typed.javadsl.Entity;
 import akka.cluster.sharding.typed.javadsl.EntityRef;
+import akka.japi.Pair;
 import akka.stream.javadsl.Source;
-import cn.edu.fudan.provider.api.ProviderService;
-import cn.edu.fudan.provider.domain.ProviderDTO;
-import cn.edu.fudan.provider.domain.ProviderParam;
+import cn.edu.fudan.DeleteResult;
+import cn.edu.fudan.DeleteStatus;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.api.broker.Topic;
 import com.lightbend.lagom.javadsl.api.transport.BadRequest;
+import com.lightbend.lagom.javadsl.broker.TopicProducer;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
 import com.lightbend.lagom.javadsl.persistence.ReadSide;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
@@ -172,6 +172,44 @@ public class ProviderServiceImpl implements ProviderService {
                     .thenApply(this::handleConfirmation)
                     .thenApply(accepted -> new DeleteResult<>((DeleteStatus) accepted.get(), id));
         };
+    }
+
+    /**
+     * publish provider events
+     *
+     * @return provider topic
+     */
+    @Override
+    public Topic<ProviderEventPublish> providerEvent() {
+        return TopicProducer.taggedStreamWithOffset(ProviderEvent.TAG.allTags(), (tag, offset) ->
+                // Load the event stream for the passed in shard tag
+                persistentEntityRegistry.eventStream(tag, offset).map(eventAndOffset -> {
+                    ProviderEventPublish eventToPublish;
+                    ProviderEvent event = eventAndOffset.first();
+                    if (event instanceof ProviderEvent.ProviderAdded) {
+                        ProviderEvent.ProviderAdded messageChanged = (ProviderEvent.ProviderAdded) event;
+                        eventToPublish = new ProviderEventPublish.ProviderAdded(
+                                messageChanged.getProviderDTO(), messageChanged.getEventTime()
+                        );
+                    } else if (event instanceof ProviderEvent.ProviderUpdated) {
+                        ProviderEvent.ProviderUpdated messageChanged = (ProviderEvent.ProviderUpdated) event;
+                        eventToPublish = new ProviderEventPublish.ProviderUpdated(
+                                messageChanged.getProviderDTO(), messageChanged.getEventTime()
+                        );
+                    } else if (event instanceof ProviderEvent.ProviderDeleted) {
+                        ProviderEvent.ProviderDeleted messageChanged = (ProviderEvent.ProviderDeleted) event;
+                        eventToPublish = new ProviderEventPublish.ProviderDeleted(
+                                messageChanged.getProviderId(), messageChanged.getEventTime()
+                        );
+                    } else {
+                        throw new IllegalArgumentException("Unknown event: " + event);
+                    }
+
+                    // We return a pair of the translated event, and its offset, so that
+                    // Lagom can track which offsets have been published.
+                    return Pair.create(eventToPublish, eventAndOffset.second());
+                })
+        );
     }
 
 

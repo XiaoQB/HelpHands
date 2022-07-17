@@ -1,13 +1,14 @@
 package cn.edu.fudan.provider;
 
+import akka.actor.typed.SupervisorStrategy;
 import akka.cluster.sharding.typed.javadsl.EntityContext;
 import akka.cluster.sharding.typed.javadsl.EntityTypeKey;
 import akka.persistence.typed.PersistenceId;
 import akka.persistence.typed.javadsl.*;
-import cn.edu.fudan.provider.domain.ProviderDTO;
-import cn.edu.fudan.provider.domain.ProviderParam;
+import cn.edu.fudan.DeleteStatus;
 import com.lightbend.lagom.javadsl.persistence.AkkaTaggerAdapter;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Set;
@@ -32,8 +33,11 @@ public class ProviderEntity
         super(
                 PersistenceId.of(
                         entityContext.getEntityTypeKey().name(),
-                        entityContext.getEntityId()
-                )
+                        entityContext.getEntityId(),
+                        "|"
+                ),
+                SupervisorStrategy.restartWithBackoff(
+                        Duration.ofSeconds(2), Duration.ofSeconds(30), 0.2)
         );
         this.entityContext = entityContext;
         this.entityId = entityContext.getEntityId();

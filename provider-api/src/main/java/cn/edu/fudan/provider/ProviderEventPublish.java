@@ -1,36 +1,34 @@
 package cn.edu.fudan.provider;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.Preconditions;
-import com.lightbend.lagom.javadsl.persistence.AggregateEvent;
-import com.lightbend.lagom.javadsl.persistence.AggregateEventShards;
-import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
-import com.lightbend.lagom.javadsl.persistence.AggregateEventTagger;
-import com.lightbend.lagom.serialization.Jsonable;
 import lombok.Value;
 
 import java.time.Instant;
 
 /**
  * @author fuwuchen
- * @date 2022/5/19 18:19
  */
-public interface ProviderEvent extends Jsonable, AggregateEvent<ProviderEvent> {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ProviderEventPublish.ProviderAdded.class, name = "provider-added"),
+        @JsonSubTypes.Type(value = ProviderEventPublish.ProviderUpdated.class, name = "provider-updated"),
+        @JsonSubTypes.Type(value = ProviderEventPublish.ProviderDeleted.class, name = "provider-deleted")
+})
+public interface ProviderEventPublish {
     /**
-     * Tags are used for getting and publishing streams of events. Each event
-     * will have this tag, and in this case, we are partitioning the tags into
-     * 4 shards, which means we can have 4 concurrent processors/publishers of
-     * events.
+     * topic 消息分区字段
+     * @return uuid of provider by default
      */
-    AggregateEventShards<ProviderEvent> TAG = AggregateEventTag.sharded(ProviderEvent.class, 4);
+    String getPartitionKey();
 
     /**
      * An event that represents a change in greeting message.
      */
     @Value
-    @JsonDeserialize
-    class ProviderAdded implements ProviderEvent {
+    class ProviderAdded implements ProviderEventPublish {
 
         public ProviderDTO providerDTO;
         public Instant eventTime;
@@ -40,11 +38,15 @@ public interface ProviderEvent extends Jsonable, AggregateEvent<ProviderEvent> {
             this.providerDTO = Preconditions.checkNotNull(providerDTO, "providerDTO");
             this.eventTime = Preconditions.checkNotNull(eventTime, "eventTime");
         }
+
+        @Override
+        public String getPartitionKey() {
+            return providerDTO.getId();
+        }
     }
 
     @Value
-    @JsonDeserialize
-    class ProviderUpdated implements ProviderEvent {
+    class ProviderUpdated implements ProviderEventPublish {
 
         public ProviderDTO providerDTO;
         public Instant eventTime;
@@ -54,11 +56,15 @@ public interface ProviderEvent extends Jsonable, AggregateEvent<ProviderEvent> {
             this.providerDTO = Preconditions.checkNotNull(providerDTO, "providerDTO");
             this.eventTime = Preconditions.checkNotNull(eventTime, "eventTime");
         }
+
+        @Override
+        public String getPartitionKey() {
+            return providerDTO.getId();
+        }
     }
 
     @Value
-    @JsonDeserialize
-    class ProviderDeleted implements ProviderEvent {
+    class ProviderDeleted implements ProviderEventPublish {
 
         public String providerId;
         public Instant eventTime;
@@ -68,14 +74,10 @@ public interface ProviderEvent extends Jsonable, AggregateEvent<ProviderEvent> {
             this.providerId = Preconditions.checkNotNull(providerId, "providerId");
             this.eventTime = Preconditions.checkNotNull(eventTime, "eventTime");
         }
-    }
 
-    /**
-     * provider event tags
-     * @return tags
-     */
-    @Override
-    default AggregateEventTagger<ProviderEvent> aggregateTag() {
-        return TAG;
+        @Override
+        public String getPartitionKey() {
+            return providerId;
+        }
     }
 }

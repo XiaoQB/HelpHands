@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>provider-impl</artifactId>
+    <artifactId>service-impl</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -25,7 +25,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>provider-api</artifactId>
+            <artifactId>service-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -70,5 +70,6 @@
             </plugin>
         </plugins>
     </build>
+
 
 </project>

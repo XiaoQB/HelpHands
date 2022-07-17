@@ -1,9 +1,9 @@
 package cn.edu.fudan.provider;
 
-import cn.edu.fudan.provider.domain.ProviderDTO;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
+import com.lightbend.lagom.serialization.CompressedJsonable;
 import lombok.Value;
 
 import java.util.Objects;
@@ -14,8 +14,8 @@ import java.util.Objects;
  */
 @Value
 @JsonDeserialize
-public class ProviderState {
-    public final ProviderDTO provider;
+public class ProviderState implements CompressedJsonable {
+    public ProviderDTO provider;
 
     @JsonCreator
     ProviderState(ProviderDTO provider) {
