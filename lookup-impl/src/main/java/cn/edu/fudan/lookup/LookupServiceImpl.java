@@ -40,8 +40,8 @@ public class LookupServiceImpl implements LookupService {
         return request -> {
             CompletionStage<ProviderDTO> summaries = cassandraSession
                     .selectOne(String.format(
-                            "SELECT id, name, mobile, since, rating FROM %s where id = '%s'",
-                            ProviderConfig.TABLE_NAME, id))
+                            "SELECT id, name, mobile, since, rating FROM %s where id = ?",
+                            ProviderConfig.TABLE_NAME), id)
                     .thenApplyAsync(row -> {
                         Row data = row.orElseThrow(() -> new BadRequest("Provider doesn't exist"));
                         return new ProviderDTO(
