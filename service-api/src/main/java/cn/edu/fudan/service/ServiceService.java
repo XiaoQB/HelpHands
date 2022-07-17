@@ -2,13 +2,14 @@ package cn.edu.fudan.service;
 
 import akka.NotUsed;
 import cn.edu.fudan.DeleteResult;
-import cn.edu.fudan.DeleteStatus;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.api.broker.Topic;
+import com.lightbend.lagom.javadsl.api.broker.kafka.KafkaProperties;
 import com.lightbend.lagom.javadsl.api.transport.Method;
 
-import static com.lightbend.lagom.javadsl.api.Service.restCall;
+import static com.lightbend.lagom.javadsl.api.Service.topic;
 
 /**
  * @author fuwuchen
@@ -48,7 +49,11 @@ public interface ServiceService extends Service {
      * @return the deletion result
      */
     ServiceCall<NotUsed, DeleteResult<String>> deleteById(String id);
-
+    /**
+     * publish service events to kafka
+     * @return service topic
+     */
+    Topic<ServiceEventPublish> serviceEvent();
     /**
      * describe router
      * @return descriptor
@@ -62,7 +67,11 @@ public interface ServiceService extends Service {
                 Service.restCall(Method.PUT, "/services/:id/rate", this::rateById),
                 Service.restCall(Method.GET, "/services/:id", this::findById),
                 Service.restCall(Method.DELETE, "/services/:id", this::deleteById)
-        ).withAutoAcl(true);
+        ).withTopics(
+                topic("service-events", this::serviceEvent)
+                        .withProperty(KafkaProperties.partitionKeyStrategy(),
+                                ServiceEventPublish::getPartitionKey))
+                .withAutoAcl(true);
         // @formatter:on
     }
 }

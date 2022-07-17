@@ -4,6 +4,8 @@ import akka.Done;
 import akka.stream.javadsl.Flow;
 import cn.edu.fudan.provider.api.ProviderService;
 import cn.edu.fudan.provider.domain.ProviderEventPublish;
+import cn.edu.fudan.service.ServiceEventPublish;
+import cn.edu.fudan.service.ServiceService;
 
 import javax.inject.Inject;
 import java.util.concurrent.CompletableFuture;
@@ -15,10 +17,12 @@ import java.util.concurrent.CompletableFuture;
 public class StreamSubscriber {
     @Inject
     public StreamSubscriber(ProviderService providerService,
-                            ProviderRepository providerRepository) {
+                            ProviderRepository providerRepository,
+                            ServiceService serviceService,
+                            ServiceRepository serviceRepository) {
         // Create a subscriber
         providerService.providerEvent().subscribe()
-                .withGroupId("lookup")
+                .withGroupId("lookup-provider")
                 // And subscribe to it with at least once processing semantics.
                 .atLeastOnce(
                         // Create a flow that emits a Done for each message it processes
@@ -35,6 +39,31 @@ public class StreamSubscriber {
                                 ProviderEventPublish.ProviderDeleted messageChanged =
                                         (ProviderEventPublish.ProviderDeleted) event;
                                 return providerRepository.deleteProvider(messageChanged.getProviderId());
+                            } else {
+                                // Ignore all others events
+                                return CompletableFuture.completedFuture(Done.getInstance());
+                            }
+                        })
+                );
+
+        serviceService.serviceEvent().subscribe()
+                .withGroupId("lookup-service")
+                // And subscribe to it with at least once processing semantics.
+                .atLeastOnce(
+                        // Create a flow that emits a Done for each message it processes
+                        Flow.<ServiceEventPublish>create().mapAsync(1, event -> {
+                            if (event instanceof ServiceEventPublish.ServiceAdded) {
+                                ServiceEventPublish.ServiceAdded messageChanged =
+                                        (ServiceEventPublish.ServiceAdded) event;
+                                return serviceRepository.addService(messageChanged.getServiceDTO());
+                            } else if (event instanceof ServiceEventPublish.ServiceUpdated) {
+                                ServiceEventPublish.ServiceUpdated messageChanged =
+                                        (ServiceEventPublish.ServiceUpdated) event;
+                                return serviceRepository.updateService(messageChanged.getServiceDTO());
+                            } else if (event instanceof ServiceEventPublish.ServiceDeleted) {
+                                ServiceEventPublish.ServiceDeleted messageChanged =
+                                        (ServiceEventPublish.ServiceDeleted) event;
+                                return serviceRepository.deleteService(messageChanged.getServiceId());
                             } else {
                                 // Ignore all others events
                                 return CompletableFuture.completedFuture(Done.getInstance());

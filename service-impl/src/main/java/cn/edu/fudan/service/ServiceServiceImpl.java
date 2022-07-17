@@ -4,10 +4,13 @@ import akka.NotUsed;
 import akka.cluster.sharding.typed.javadsl.ClusterSharding;
 import akka.cluster.sharding.typed.javadsl.Entity;
 import akka.cluster.sharding.typed.javadsl.EntityRef;
+import akka.japi.Pair;
 import cn.edu.fudan.DeleteResult;
 import cn.edu.fudan.DeleteStatus;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.api.broker.Topic;
 import com.lightbend.lagom.javadsl.api.transport.BadRequest;
+import com.lightbend.lagom.javadsl.broker.TopicProducer;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
 
 import javax.inject.Inject;
@@ -129,6 +132,44 @@ public class ServiceServiceImpl implements ServiceService {
                     .thenApplyAsync(this::handleConfirmation)
                     .thenApplyAsync(accepted -> new DeleteResult<>((DeleteStatus) accepted.get(), id));
         };
+    }
+
+    /**
+     * publish service events to kafka
+     *
+     * @return service topic
+     */
+    @Override
+    public Topic<ServiceEventPublish> serviceEvent() {
+        return TopicProducer.taggedStreamWithOffset(ServiceEvent.TAG.allTags(), (tag, offset) ->
+                // Load the event stream for the passed in shard tag
+                persistentEntityRegistry.eventStream(tag, offset).map(eventAndOffset -> {
+                    ServiceEventPublish eventToPublish;
+                    ServiceEvent event = eventAndOffset.first();
+                    if (event instanceof ServiceEvent.ServiceAdded) {
+                        ServiceEvent.ServiceAdded messageChanged = (ServiceEvent.ServiceAdded) event;
+                        eventToPublish = new ServiceEventPublish.ServiceAdded(
+                                messageChanged.getServiceDTO(), messageChanged.getEventTime()
+                        );
+                    } else if (event instanceof ServiceEvent.ServiceUpdated) {
+                        ServiceEvent.ServiceUpdated messageChanged = (ServiceEvent.ServiceUpdated) event;
+                        eventToPublish = new ServiceEventPublish.ServiceUpdated(
+                                messageChanged.getServiceDTO(), messageChanged.getEventTime()
+                        );
+                    } else if (event instanceof ServiceEvent.ServiceDeleted) {
+                        ServiceEvent.ServiceDeleted messageChanged = (ServiceEvent.ServiceDeleted) event;
+                        eventToPublish = new ServiceEventPublish.ServiceDeleted(
+                                messageChanged.getServiceId(), messageChanged.getEventTime()
+                        );
+                    } else {
+                        throw new IllegalArgumentException("Unknown event: " + event);
+                    }
+
+                    // We return a pair of the translated event, and its offset, so that
+                    // Lagom can track which offsets have been published.
+                    return Pair.create(eventToPublish, eventAndOffset.second());
+                })
+        );
     }
 
     /**

@@ -2,6 +2,7 @@ package cn.edu.fudan.lookup;
 
 import cn.edu.fudan.lookup.api.LookupService;
 import cn.edu.fudan.provider.api.ProviderService;
+import cn.edu.fudan.service.ServiceService;
 import com.google.inject.AbstractModule;
 import com.lightbend.lagom.javadsl.server.ServiceGuiceSupport;
 
@@ -14,6 +15,7 @@ public class LookupModule extends AbstractModule implements ServiceGuiceSupport 
     protected void configure() {
         bindService(LookupService.class, LookupServiceImpl.class);
         bindClient(ProviderService.class);
+        bindClient(ServiceService.class);
         bind(StreamSubscriber.class).asEagerSingleton();
     }
 }
