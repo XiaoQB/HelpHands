@@ -1,7 +1,7 @@
 package cn.edu.fudan.lookup;
 
 import cn.edu.fudan.lookup.api.LookupService;
-import cn.edu.fudan.provider.api.ProviderService;
+import cn.edu.fudan.provider.ProviderService;
 import cn.edu.fudan.service.ServiceService;
 import com.google.inject.AbstractModule;
 import com.lightbend.lagom.javadsl.server.ServiceGuiceSupport;

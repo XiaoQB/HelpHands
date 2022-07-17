@@ -1,6 +1,5 @@
-package cn.edu.fudan.provider.domain;
+package cn.edu.fudan.provider;
 
-import cn.edu.fudan.provider.api.ProviderDTO;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

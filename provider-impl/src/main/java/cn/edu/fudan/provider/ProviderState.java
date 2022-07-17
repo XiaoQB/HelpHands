@@ -1,6 +1,5 @@
 package cn.edu.fudan.provider;
 
-import cn.edu.fudan.provider.api.ProviderDTO;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;

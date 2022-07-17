@@ -1,6 +1,5 @@
 package cn.edu.fudan.provider;
 
-import cn.edu.fudan.provider.api.ProviderService;
 import com.google.inject.AbstractModule;
 import com.lightbend.lagom.javadsl.server.ServiceGuiceSupport;
 

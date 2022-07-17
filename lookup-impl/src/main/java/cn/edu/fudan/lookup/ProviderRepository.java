@@ -2,7 +2,7 @@ package cn.edu.fudan.lookup;
 
 import akka.Done;
 import cn.edu.fudan.provider.ProviderConfig;
-import cn.edu.fudan.provider.api.ProviderDTO;
+import cn.edu.fudan.provider.ProviderDTO;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 
 import javax.inject.Inject;

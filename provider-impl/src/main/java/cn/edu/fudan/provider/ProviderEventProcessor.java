@@ -1,7 +1,6 @@
 package cn.edu.fudan.provider;
 
 import akka.Done;
-import cn.edu.fudan.provider.api.ProviderDTO;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
 import com.google.inject.Inject;

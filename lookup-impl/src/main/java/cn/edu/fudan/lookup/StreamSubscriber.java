@@ -2,8 +2,8 @@ package cn.edu.fudan.lookup;
 
 import akka.Done;
 import akka.stream.javadsl.Flow;
-import cn.edu.fudan.provider.api.ProviderService;
-import cn.edu.fudan.provider.domain.ProviderEventPublish;
+import cn.edu.fudan.provider.ProviderService;
+import cn.edu.fudan.provider.ProviderEventPublish;
 import cn.edu.fudan.service.ServiceEventPublish;
 import cn.edu.fudan.service.ServiceService;
 
