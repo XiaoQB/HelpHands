@@ -33,8 +33,10 @@ public class ServiceRepository {
         // with an exception, then reinitialise the session and attempt to create the tables
         if (initialisedSession == null || initialisedSession.isCompletedExceptionally()) {
             initialisedSession = uninitialisedSession.executeCreateTable(
-                    ServiceConfig.CREATE_TABLE_STATEMENT
-            ).thenApply(done -> uninitialisedSession).toCompletableFuture();
+                    ServiceConfig.CREATE_TABLE_STATEMENT)
+                    .thenApply(done -> uninitialisedSession.executeWrite(
+                            ServiceConfig.CREATE_TYPE_INDEX_STATEMENT))
+                    .thenApply(done -> uninitialisedSession).toCompletableFuture();
         }
         return initialisedSession;
     }

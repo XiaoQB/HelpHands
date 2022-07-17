@@ -12,6 +12,9 @@ import com.lightbend.lagom.javadsl.api.broker.kafka.KafkaProperties;
 import com.lightbend.lagom.javadsl.api.transport.Method;
 import org.pcollections.PCollection;
 
+import java.util.Collection;
+import java.util.List;
+
 import static com.lightbend.lagom.javadsl.api.Service.restCall;
 import static com.lightbend.lagom.javadsl.api.Service.topic;
 
@@ -33,7 +36,17 @@ public interface LookupService extends Service {
      * @param type field of service
      * @return list of services
      */
-    ServiceCall<NotUsed, PCollection<ServiceDTO>> findServiceByType(String type);
+    ServiceCall<NotUsed, List<ServiceDTO>> findServiceByType(String type);
+    /**
+     * Get all providers (for test)
+     * @return list of providers info
+     */
+    ServiceCall<NotUsed, List<ProviderDTO>> findAllProviders();
+    /**
+     * Get all services (for test)
+     * @return list of services info
+     */
+    ServiceCall<NotUsed, List<ServiceDTO>> findAllServices();
     /**
      * router descriptor
      * @return descriptor
@@ -42,7 +55,9 @@ public interface LookupService extends Service {
     default Descriptor descriptor() {
         return Service.named("lookup").withCalls(
                 Service.restCall(Method.GET, "/status/service/:type", this::findServiceByType),
-                Service.restCall(Method.GET, "/status/provider/:id", this::findProviderById)
+                Service.restCall(Method.GET, "/status/provider/:id", this::findProviderById),
+                Service.restCall(Method.GET, "/status/service", this::findAllServices),
+                Service.restCall(Method.GET, "/status/provider", this::findAllProviders)
         ).withAutoAcl(true);
     }
 }
