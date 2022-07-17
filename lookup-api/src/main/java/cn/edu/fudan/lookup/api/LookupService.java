@@ -1,6 +1,7 @@
 package cn.edu.fudan.lookup.api;
 
 import akka.NotUsed;
+import cn.edu.fudan.domain.ProviderDTO;
 import cn.edu.fudan.service.ServiceDTO;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
@@ -16,9 +17,13 @@ import static com.lightbend.lagom.javadsl.api.Service.restCall;
 public interface LookupService extends Service {
 //    GET /lookup/?q=query
 //    GET /lookup/?q=query&type=type
-//    GET /status/provider/:id
-//    GET /status/service/:type
 
+    /**
+     * Get provider by id
+     * @param id uuid of the service
+     * @return provider info
+     */
+    ServiceCall<NotUsed, ProviderDTO> findProviderById(String id);
     /**
      * Get services by type
      * @param type field of service
@@ -32,7 +37,8 @@ public interface LookupService extends Service {
     @Override
     default Descriptor descriptor() {
         return Service.named("lookup").withCalls(
-                Service.restCall(Method.GET, "/status/service/:type", this::findServiceByType)
+                Service.restCall(Method.GET, "/status/service/:type", this::findServiceByType),
+                Service.restCall(Method.GET, "/status/provider/:id", this::findProviderById)
         ).withAutoAcl(true);
     }
 }
