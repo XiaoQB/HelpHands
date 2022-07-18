@@ -93,8 +93,9 @@ public class ServiceEntity
                                 new ServiceCommand.Rejected("Service already exists")))
                 .onCommand(ServiceCommand.UpdateById.class, this::onUpdateById)
                 .onCommand(ServiceCommand.DeleteById.class, this::onDeleteById)
+                .onCommand(ServiceCommand.FindById.class, this::onFindById)
         ;
-        builder.forState(service -> !service.hasService())
+        builder.forState(ServiceState::nonService)
                 .onCommand(ServiceCommand.Add.class, this::onAddService)
                 .onCommand(ServiceCommand.UpdateById.class, (state, cmd) ->
                         Effect().reply(cmd.getReplyTo(),
@@ -102,10 +103,10 @@ public class ServiceEntity
                 .onCommand(ServiceCommand.DeleteById.class, (state, cmd) ->
                         Effect().reply(cmd.getReplyTo(),
                                 new ServiceCommand.Rejected("Service doesn't exists")))
+                .onCommand(ServiceCommand.FindById.class, (state, cmd) ->
+                        Effect().reply(cmd.getReplyTo(),
+                                new ServiceCommand.Rejected("Service doesn't exists")))
         ;
-
-        builder.forAnyState()
-                .onCommand(ServiceCommand.FindById.class, this::onFindById);
         return builder.build();
     }
 
