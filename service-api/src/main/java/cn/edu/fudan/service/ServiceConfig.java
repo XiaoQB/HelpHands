@@ -17,8 +17,8 @@ public class ServiceConfig {
                     "VALUES (?, ?, ?, ?, ?, ?, ?)", TABLE_NAME);
     public static final String UPDATE_STATEMENT =
             String.format("UPDATE %s " +
-                    "SET type = ?, providerId = ?, area = ?, cost = ?, rating = ?, status = ?" +
-                    "WHERE id = ?", TABLE_NAME);
+                    "SET type = ?, area = ?, cost = ?, rating = ?, status = ? " +
+                    "WHERE id = ? and providerId = ?", TABLE_NAME);
     public static final String DELETE_STATEMENT =
             String.format("DELETE FROM %s WHERE id = ?", TABLE_NAME);
     public static final String CREATE_TYPE_INDEX_STATEMENT =

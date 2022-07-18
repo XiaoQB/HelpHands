@@ -1,6 +1,5 @@
 package cn.edu.fudan.service;
 
-import akka.actor.testkit.typed.javadsl.Effects;
 import akka.actor.typed.SupervisorStrategy;
 import akka.cluster.sharding.typed.javadsl.EntityContext;
 import akka.cluster.sharding.typed.javadsl.EntityTypeKey;

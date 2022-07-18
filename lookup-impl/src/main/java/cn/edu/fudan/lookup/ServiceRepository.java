@@ -54,10 +54,10 @@ public class ServiceRepository {
     public CompletionStage<Done> updateService(ServiceDTO serviceDTO) {
         return session().thenCompose(session ->
                 session.executeWrite(ServiceConfig.UPDATE_STATEMENT,
-                        serviceDTO.getType(), serviceDTO.getProviderId(),
-                        serviceDTO.getArea(), serviceDTO.getCost(),
-                        serviceDTO.getRating(), serviceDTO.getStatus(),
-                        serviceDTO.getId())
+                        serviceDTO.getType(), serviceDTO.getArea(),
+                        serviceDTO.getCost(), serviceDTO.getRating(),
+                        serviceDTO.getStatus(),
+                        serviceDTO.getId(), serviceDTO.getProviderId())
         );
     }
 
