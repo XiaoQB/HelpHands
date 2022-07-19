@@ -6,10 +6,11 @@ import cn.edu.fudan.domain.consumer.ConsumerParam;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.api.broker.Topic;
+import com.lightbend.lagom.javadsl.api.broker.kafka.KafkaProperties;
 import com.lightbend.lagom.javadsl.api.transport.Method;
 
-import static com.lightbend.lagom.javadsl.api.Service.named;
-import static com.lightbend.lagom.javadsl.api.Service.restCall;
+import static com.lightbend.lagom.javadsl.api.Service.*;
 
 /**
  * @author XiaoQuanbin
@@ -43,6 +44,12 @@ public interface ConsumerService extends Service {
     ServiceCall<NotUsed, DeleteResult<String>> deleteById(String id);
 
     /**
+     * publish consumer events
+     * @return consumer topic
+     */
+    Topic<ConsumerEventPublish> consumerEvent();
+
+    /**
      * route definition
      * @return descriptor
      */
@@ -53,6 +60,10 @@ public interface ConsumerService extends Service {
                 restCall(Method.PUT, "/consumers/:id", this::updateById),
                 restCall(Method.GET, "/consumers/:id", this::findById),
                 restCall(Method.DELETE, "/consumers/:id", this::deleteById)
-        ).withAutoAcl(true);
+        ).withTopics(
+                topic("consumer-events", this::consumerEvent)
+                        .withProperty(KafkaProperties.partitionKeyStrategy(),
+                        ConsumerEventPublish::getPartitionKey))
+                .withAutoAcl(true);
     }
 }

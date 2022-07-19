@@ -4,10 +4,13 @@ import akka.NotUsed;
 import akka.cluster.sharding.typed.javadsl.ClusterSharding;
 import akka.cluster.sharding.typed.javadsl.Entity;
 import akka.cluster.sharding.typed.javadsl.EntityRef;
+import akka.japi.Pair;
 import cn.edu.fudan.domain.consumer.ConsumerDTO;
 import cn.edu.fudan.domain.consumer.ConsumerParam;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.api.broker.Topic;
 import com.lightbend.lagom.javadsl.api.transport.BadRequest;
+import com.lightbend.lagom.javadsl.broker.TopicProducer;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
 
 import javax.inject.Inject;
@@ -118,6 +121,44 @@ public class ConsumerServiceImpl implements ConsumerService {
                     .thenApply(this::handleConfirmation)
                     .thenApply(accepted -> new DeleteResult<>((DeleteStatus)accepted.get() ,id));
         };
+    }
+
+    /**
+     * publish consumer events
+     *
+     * @return consumer topic
+     */
+    @Override
+    public Topic<ConsumerEventPublish> consumerEvent() {
+        return TopicProducer.taggedStreamWithOffset(ConsumerEvent.TAG.allTags(), (tag, offset) ->
+                // Load the event stream for the passed in shard tag
+                persistentEntityRegistry.eventStream(tag, offset).map(eventAndOffset -> {
+                    ConsumerEventPublish eventToPublish;
+                    ConsumerEvent event = eventAndOffset.first();
+                    if (event instanceof ConsumerEvent.ConsumerAdded) {
+                        ConsumerEvent.ConsumerAdded messageChanged = (ConsumerEvent.ConsumerAdded) event;
+                        eventToPublish = new ConsumerEventPublish.ConsumerAdded(
+                                messageChanged.getConsumerDTO(), messageChanged.getEventTime()
+                        );
+                    } else if (event instanceof ConsumerEvent.ConsumerUpdated) {
+                        ConsumerEvent.ConsumerUpdated messageChanged = (ConsumerEvent.ConsumerUpdated) event;
+                        eventToPublish = new ConsumerEventPublish.ConsumerUpdated(
+                                messageChanged.getConsumerDTO(), messageChanged.getEventTime()
+                        );
+                    } else if (event instanceof ConsumerEvent.ConsumerDeleted) {
+                        ConsumerEvent.ConsumerDeleted messageChanged = (ConsumerEvent.ConsumerDeleted) event;
+                        eventToPublish = new ConsumerEventPublish.ConsumerDeleted(
+                                messageChanged.getConsumerId(), messageChanged.getEventTime()
+                        );
+                    } else {
+                        throw new IllegalArgumentException("Unknown event: " + event);
+                    }
+
+                    // We return a pair of the translated event, and its offset, so that
+                    // Lagom can track which offsets have been published.
+                    return Pair.create(eventToPublish, eventAndOffset.second());
+                })
+        );
     }
 
     /**
