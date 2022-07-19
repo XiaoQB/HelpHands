@@ -37,6 +37,10 @@ public class ServiceState implements CompressedJsonable {
         return service.getId() != null;
     }
 
+    boolean nonService() {
+        return !hasService();
+    }
+
     public static final ServiceState EMPTY = new ServiceState(ServiceDTO.EMPTY);
 
     @Override
