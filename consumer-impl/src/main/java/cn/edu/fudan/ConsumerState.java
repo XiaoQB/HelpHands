@@ -3,6 +3,7 @@ package cn.edu.fudan;
 import cn.edu.fudan.domain.consumer.ConsumerDTO;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.base.Preconditions;
+import com.lightbend.lagom.serialization.CompressedJsonable;
 
 import java.util.Objects;
 
@@ -10,7 +11,7 @@ import java.util.Objects;
  * @author XiaoQuanbin
  * @date 2022/5/23
  */
-public class ConsumerState {
+public class ConsumerState implements CompressedJsonable {
     public final ConsumerDTO consumer;
 
     @JsonCreator

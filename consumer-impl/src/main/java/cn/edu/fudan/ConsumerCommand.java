@@ -17,7 +17,7 @@ public interface ConsumerCommand extends Jsonable {
     /**
      * Super interface for Accepted/Rejected replies used by Add
      */
-    interface Confirmation {
+    interface Confirmation extends Jsonable{
     }
 
 
