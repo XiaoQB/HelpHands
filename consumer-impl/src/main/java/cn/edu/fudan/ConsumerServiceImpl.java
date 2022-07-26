@@ -12,6 +12,8 @@ import com.lightbend.lagom.javadsl.api.broker.Topic;
 import com.lightbend.lagom.javadsl.api.transport.BadRequest;
 import com.lightbend.lagom.javadsl.broker.TopicProducer;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
+import com.lightbend.lagom.javadsl.persistence.ReadSide;
+import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 
 import javax.inject.Inject;
 import java.time.Duration;
@@ -25,11 +27,16 @@ public class ConsumerServiceImpl implements ConsumerService {
 
     private final PersistentEntityRegistry persistentEntityRegistry;
 
+    private final CassandraSession session;
+
     private final Duration askTimeout = Duration.ofSeconds(5);
     private ClusterSharding clusterSharding;
 
     @Inject
-    public ConsumerServiceImpl(PersistentEntityRegistry persistentEntityRegistry, ClusterSharding clusterSharding){
+    public ConsumerServiceImpl(PersistentEntityRegistry persistentEntityRegistry,
+                               ClusterSharding clusterSharding,
+                               CassandraSession session,
+                               ReadSide readSide){
         this.clusterSharding = clusterSharding;
         // The persistent entity registry is only required to build an event stream for the TopicProducer
         this.persistentEntityRegistry = persistentEntityRegistry;
@@ -41,6 +48,8 @@ public class ConsumerServiceImpl implements ConsumerService {
                         ConsumerEntity::create
                 )
         );
+        this.session = session;
+        readSide.register(ConsumerEventProcessor.class);
     }
 
     /**
