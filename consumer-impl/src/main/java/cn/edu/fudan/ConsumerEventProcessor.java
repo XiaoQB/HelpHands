@@ -40,9 +40,8 @@ public class ConsumerEventProcessor extends ReadSideProcessor<ConsumerEvent> {
         CassandraReadSide.ReadSideHandlerBuilder<ConsumerEvent> builder =
                 readSide.builder(ConsumerConfig.READ_SIDE_ID);
 
-        builder.setGlobalPrepare(this::prepareInsertConsumer)
-                .setGlobalPrepare(this::prepareDeleteConsumer)
-                .setGlobalPrepare(this::prepareUpdateConsumer);
+        builder.setGlobalPrepare(this::createTable)
+                        .setPrepare(tag -> prepareInsertConsumer());
 
         builder.setEventHandler(ConsumerEvent.ConsumerAdded.class, this::processConsumerAdded)
                 .setEventHandler(ConsumerEvent.ConsumerUpdated.class, this::processConsumerUpdated)
@@ -63,6 +62,8 @@ public class ConsumerEventProcessor extends ReadSideProcessor<ConsumerEvent> {
                 .thenApply(
                         ps -> {
                             this.insertConsumer = ps;
+                            prepareUpdateConsumer();
+                            prepareDeleteConsumer();
                             return Done.getInstance();
                         });
     }
