@@ -91,8 +91,7 @@ public class OrderEntity
         builder.forState(OrderState::hasOrder)
                         .onCommand(OrderCommand.Add.class, (state, cmd) ->
                                 Effect().reply(cmd.getReplyTo(),
-                                        new OrderCommand.Rejected("Order already created") {
-                                        }))
+                                        new OrderCommand.Rejected("Order already created")))
                         .onCommand(OrderCommand.UpdateById.class, this::onUpdateById)
                         .onCommand(OrderCommand.FindById.class, this::onFindById)
                         .onCommand(OrderCommand.DeleteById.class, this::onDeleteById);
