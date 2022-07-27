@@ -2,6 +2,7 @@ package cn.edu.fudan.domain.order;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Value;
 
 import java.util.Objects;
@@ -37,6 +38,18 @@ public class OrderDTO {
         this.end = orderParam.getEnd();
         this.rating = orderParam.getRating();
         this.status = orderParam.getStatus();
+    }
+
+    public OrderDTO(String id, String service, String provider, String consumer, Float cost, Long start, Long end, Float rating, String status) {
+        this.id = id;
+        this.service = service;
+        this.provider = provider;
+        this.consumer = consumer;
+        this.cost = cost;
+        this.start = start;
+        this.end = end;
+        this.rating = rating;
+        this.status = status;
     }
 
     public OrderDTO mergeWithUpdate(OrderParam toUpdate) {
