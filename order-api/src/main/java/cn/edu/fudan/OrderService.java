@@ -7,8 +7,11 @@ import cn.edu.fudan.domain.order.OrderParam;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.api.broker.Topic;
+import com.lightbend.lagom.javadsl.api.broker.kafka.KafkaProperties;
 import com.lightbend.lagom.javadsl.api.transport.Method;
 import static com.lightbend.lagom.javadsl.api.Service.restCall;
+import static com.lightbend.lagom.javadsl.api.Service.topic;
 
 /**
  * @author XiaoQuanbin
@@ -29,7 +32,11 @@ public interface OrderService extends Service{
                 restCall(Method.POST, "/orders", this::add),
                 restCall(Method.PUT, "/orders/:id/rate", this::rate),
                 restCall(Method.DELETE, "/orders/:id", this::delete)
-        ).withAutoAcl(true);
+        ).withTopics(
+                topic("order-events", this::orderEvent)
+                        .withProperty(KafkaProperties.partitionKeyStrategy(),
+                                OrderEventPublish::getPartitionKey))
+                .withAutoAcl(true);
     }
 
     /**
@@ -69,4 +76,10 @@ public interface OrderService extends Service{
      */
     ServiceCall<NotUsed, DeleteResult<String>> delete(String id);
 
-}
+    /**
+     * public order events to kafka
+     * @return order topic
+     */
+    Topic<OrderEventPublish> orderEvent();
+
+    }

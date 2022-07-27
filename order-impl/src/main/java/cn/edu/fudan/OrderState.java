@@ -2,7 +2,9 @@ package cn.edu.fudan;
 
 import cn.edu.fudan.domain.order.OrderDTO;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
+import lombok.Value;
 
 import java.util.Objects;
 
@@ -10,8 +12,10 @@ import java.util.Objects;
  * @author XiaoQuanbin
  * @date 2022/5/24
  */
+@Value
+@JsonDeserialize
 public class OrderState {
-    public final OrderDTO order;
+    OrderDTO order;
 
     @JsonCreator
     OrderState(OrderDTO order) {
@@ -29,8 +33,8 @@ public class OrderState {
         return new OrderState(orderDTO);
     }
 
-    boolean hasOrder(String orderId) {
-        return Objects.equals(order.getId(), orderId);
+    boolean hasOrder() {
+        return order.getId() != null;
     }
 
     public static final OrderState EMPTY = new OrderState(OrderDTO.EMPTY);
