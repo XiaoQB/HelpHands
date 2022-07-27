@@ -5,7 +5,6 @@ import akka.cluster.sharding.typed.javadsl.ClusterSharding;
 import akka.cluster.sharding.typed.javadsl.Entity;
 import akka.cluster.sharding.typed.javadsl.EntityRef;
 import akka.japi.Pair;
-import akka.persistence.cassandra.session.javadsl.CassandraSession;
 import cn.edu.fudan.domain.consumer.ConsumerParam;
 import cn.edu.fudan.domain.order.OrderDTO;
 import cn.edu.fudan.domain.order.OrderParam;
@@ -14,7 +13,6 @@ import com.lightbend.lagom.javadsl.api.broker.Topic;
 import com.lightbend.lagom.javadsl.api.transport.BadRequest;
 import com.lightbend.lagom.javadsl.broker.TopicProducer;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
-import com.lightbend.lagom.javadsl.persistence.ReadSide;
 
 import javax.inject.Inject;
 import java.time.Duration;
@@ -28,17 +26,13 @@ public class OrderServiceImpl implements OrderService{
 
     private final Duration askTimeout = Duration.ofSeconds(5);
 
-    private final CassandraSession cassandraSession;
     private final PersistentEntityRegistry persistentEntityRegistry;
     private final ClusterSharding clusterSharding;
 
     @Inject
-    public OrderServiceImpl(CassandraSession cassandraSession,
-                            PersistentEntityRegistry persistentEntityRegistry,
-                            ClusterSharding clusterSharding,
-                            ReadSide readSide) {
-        readSide.register(OrderEventProcessor.class);
-        this.cassandraSession = cassandraSession;
+    public OrderServiceImpl(PersistentEntityRegistry persistentEntityRegistry,
+                            ClusterSharding clusterSharding) {
+
         this.persistentEntityRegistry = persistentEntityRegistry;
         this.clusterSharding = clusterSharding;
         this.clusterSharding.init(
