@@ -1,7 +1,11 @@
 package cn.edu.fudan.lookup;
 
 import akka.NotUsed;
+import cn.edu.fudan.ConsumerConfig;
+import cn.edu.fudan.OrderConfig;
 import cn.edu.fudan.domain.ProviderDTO;
+import cn.edu.fudan.domain.consumer.ConsumerDTO;
+import cn.edu.fudan.domain.order.OrderDTO;
 import cn.edu.fudan.lookup.api.LookupService;
 import cn.edu.fudan.provider.ProviderConfig;
 import cn.edu.fudan.service.ServiceConfig;
@@ -126,6 +130,90 @@ public class LookupServiceImpl implements LookupService {
                                             .status(row.getString("status"))
                                             .build())
                             .collect(Collectors.toList()));
+            return summaries.toCompletableFuture();
+        };
+    }
+
+    @Override
+    public ServiceCall<NotUsed, List<OrderDTO>> findAllOrders() {
+        return request -> {
+            CompletionStage<List<OrderDTO>> summaries =
+                    cassandraSession
+                            .selectAll(OrderConfig.SELECT_ALL_STATEMENT)
+                            .thenApply(list -> list.stream().map(row -> OrderDTO.builder()
+                                    .id(row.getString("id"))
+                                    .service(row.getString("service"))
+                                    .provider(row.getString("provider"))
+                                    .consumer(row.getString("consumer"))
+                                    .cost(row.getFloat("cost"))
+                                    .start(row.getFloat("start"))
+                                    .end(row.getFloat("end"))
+                                    .rating(row.getFloat("rating"))
+                                    .status(row.getString("status"))
+                                    .build()
+                            ).collect(Collectors.toList()));
+
+            return summaries.toCompletableFuture();
+        };
+    }
+
+    @Override
+    public ServiceCall<NotUsed, List<ConsumerDTO>> findAllConsumers() {
+        return request -> {
+            CompletionStage<List<ConsumerDTO>> summaries =
+                    cassandraSession
+                            .selectAll(ConsumerConfig.SELECT_ALL_STATEMENT)
+                            .thenApply(list -> list.stream().map(row -> ConsumerDTO.builder()
+                                    .id(row.getString("id"))
+                                    .name(row.getString("name"))
+                                    .address(row.getString("address"))
+                                    .mobile(row.getString("mobile"))
+                                    .email(row.getString("email"))
+                                    .geo(row.getString("geo"))
+                                    .build()
+                                    ).collect(Collectors.toList()));
+
+            return summaries.toCompletableFuture();
+        };
+    }
+
+    @Override
+    public ServiceCall<NotUsed, ConsumerDTO> findConsumerById(String id) {
+        return request -> {
+            CompletionStage<ConsumerDTO> summaries = cassandraSession
+                    .selectOne(ConsumerConfig.SELECT_ONE_STATEMENT, id)
+                    .thenApplyAsync(row -> {
+                        Row data = row.orElseThrow(() -> new BadRequest("Consumer doesn't exist"));
+                        return new ConsumerDTO(
+                                data.getString("id"),
+                                data.getString("name"),
+                                data.getString("address"),
+                                data.getString("mobile"),
+                                data.getString("email"),
+                                data.getString("geo"));
+                    });
+            return summaries.toCompletableFuture();
+        };
+    }
+
+    @Override
+    public ServiceCall<NotUsed, OrderDTO> findOrderById(String id) {
+        return request -> {
+            CompletionStage<OrderDTO> summaries = cassandraSession
+                    .selectOne(OrderConfig.SELECT_ONE_STATEMENT, id)
+                    .thenApplyAsync(row -> {
+                        Row data = row.orElseThrow(() -> new BadRequest("Order doesn't exist"));
+                        return new OrderDTO(
+                                data.getString("id"),
+                                data.getString("service"),
+                                data.getString("provider"),
+                                data.getString("consumer"),
+                                data.getFloat("cost"),
+                                data.getFloat("start"),
+                                data.getFloat("end"),
+                                data.getFloat("rating"),
+                                data.getString("status"));
+                    });
             return summaries.toCompletableFuture();
         };
     }

@@ -1,6 +1,7 @@
 package cn.edu.fudan.domain.consumer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.Builder;
 import lombok.Value;
 
 /**
@@ -8,6 +9,7 @@ import lombok.Value;
  * @date 2022/5/23
  */
 @Value
+@Builder
 @JsonDeserialize
 public class ConsumerDTO {
 

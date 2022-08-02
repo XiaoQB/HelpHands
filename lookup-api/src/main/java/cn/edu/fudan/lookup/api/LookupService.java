@@ -2,21 +2,16 @@ package cn.edu.fudan.lookup.api;
 
 import akka.NotUsed;
 import cn.edu.fudan.domain.ProviderDTO;
+import cn.edu.fudan.domain.consumer.ConsumerDTO;
+import cn.edu.fudan.domain.order.OrderDTO;
 import cn.edu.fudan.service.ServiceDTO;
-import cn.edu.fudan.service.ServiceEventPublish;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
-import com.lightbend.lagom.javadsl.api.broker.Topic;
-import com.lightbend.lagom.javadsl.api.broker.kafka.KafkaProperties;
 import com.lightbend.lagom.javadsl.api.transport.Method;
-import org.pcollections.PCollection;
 
-import java.util.Collection;
 import java.util.List;
 
-import static com.lightbend.lagom.javadsl.api.Service.restCall;
-import static com.lightbend.lagom.javadsl.api.Service.topic;
 
 /**
  * @author fuwuchen
@@ -56,8 +51,20 @@ public interface LookupService extends Service {
         return Service.named("lookup").withCalls(
                 Service.restCall(Method.GET, "/status/service/:type", this::findServiceByType),
                 Service.restCall(Method.GET, "/status/provider/:id", this::findProviderById),
+                Service.restCall(Method.GET, "/status/order/:id", this::findOrderById),
+                Service.restCall(Method.GET, "/status/consumer/:id", this::findConsumerById),
                 Service.restCall(Method.GET, "/status/service", this::findAllServices),
-                Service.restCall(Method.GET, "/status/provider", this::findAllProviders)
+                Service.restCall(Method.GET, "/status/provider", this::findAllProviders),
+                Service.restCall(Method.GET, "/status/consumer", this::findAllConsumers),
+                Service.restCall(Method.GET, "/status/order", this::findAllOrders)
         ).withAutoAcl(true);
     }
+
+    ServiceCall<NotUsed, List<OrderDTO>> findAllOrders();
+
+    ServiceCall<NotUsed, List<ConsumerDTO>> findAllConsumers();
+
+    ServiceCall<NotUsed, ConsumerDTO> findConsumerById(String id);
+
+    ServiceCall<NotUsed, OrderDTO> findOrderById(String id);
 }
