@@ -1,7 +1,7 @@
 package cn.edu.fudan;
 
 import akka.NotUsed;
-import cn.edu.fudan.domain.consumer.ConsumerParam;
+import akka.stream.javadsl.Source;
 import cn.edu.fudan.domain.order.OrderDTO;
 import cn.edu.fudan.domain.order.OrderParam;
 import com.lightbend.lagom.javadsl.api.Descriptor;
@@ -26,7 +26,7 @@ public interface OrderService extends Service{
     @Override
     default Descriptor descriptor() {
         return Service.named("order").withCalls(
-                restCall(Method.GET, "/orders", this::findOfConsumer),
+                restCall(Method.GET, "/orders", this::getAll),
                 restCall(Method.GET, "/orders/:id", this::get),
                 restCall(Method.PUT, "/orders/:id", this::modify),
                 restCall(Method.POST, "/orders", this::add),
@@ -43,7 +43,7 @@ public interface OrderService extends Service{
      * Gets all the orders placed by the authenticated consumer.
      * @return orders
      */
-    ServiceCall<ConsumerParam, OrderDTO> findOfConsumer();
+    ServiceCall<NotUsed, Source<OrderDTO, ?>> getAll();
 
     /**
      * Gets the details of the order with the specified :id and placed by the authenticated consumer.

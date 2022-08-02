@@ -5,7 +5,8 @@ import akka.cluster.sharding.typed.javadsl.ClusterSharding;
 import akka.cluster.sharding.typed.javadsl.Entity;
 import akka.cluster.sharding.typed.javadsl.EntityRef;
 import akka.japi.Pair;
-import cn.edu.fudan.domain.consumer.ConsumerParam;
+import akka.stream.javadsl.Source;
+import cn.edu.fudan.OrderCommand.Accepted;
 import cn.edu.fudan.domain.order.OrderDTO;
 import cn.edu.fudan.domain.order.OrderParam;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
@@ -13,10 +14,13 @@ import com.lightbend.lagom.javadsl.api.broker.Topic;
 import com.lightbend.lagom.javadsl.api.transport.BadRequest;
 import com.lightbend.lagom.javadsl.broker.TopicProducer;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
+import com.lightbend.lagom.javadsl.persistence.ReadSide;
+import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 
 import javax.inject.Inject;
 import java.time.Duration;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author XiaoQuanbin
@@ -28,13 +32,17 @@ public class OrderServiceImpl implements OrderService{
 
     private final PersistentEntityRegistry persistentEntityRegistry;
     private final ClusterSharding clusterSharding;
+    private final CassandraSession cassandraSession;
 
     @Inject
     public OrderServiceImpl(PersistentEntityRegistry persistentEntityRegistry,
-                            ClusterSharding clusterSharding) {
-
+                            CassandraSession cassandraSession,
+                            ClusterSharding clusterSharding,
+                            ReadSide readSide) {
         this.persistentEntityRegistry = persistentEntityRegistry;
+        this.cassandraSession = cassandraSession;
         this.clusterSharding = clusterSharding;
+        readSide.register(OrderEventProcessor.class);
         this.clusterSharding.init(
                 Entity.of(
                         OrderEntity.ENTITY_TYPE_KEY,
@@ -49,8 +57,29 @@ public class OrderServiceImpl implements OrderService{
      * @return orders
      */
     @Override
-    public ServiceCall<ConsumerParam, OrderDTO> findOfConsumer() {
-        return null;
+    public ServiceCall<NotUsed, Source<OrderDTO, ?>> getAll() {
+        return request -> {
+            Source<OrderDTO, ?> summaries =
+                    cassandraSession
+                            .select(OrderConfig.SELECT_ALL_STATEMENT)
+                            .map(row -> {
+                                System.out.println(row);
+                                return new OrderDTO(
+                                        row.getString("id"),
+                                        row.getString("service"),
+                                        row.getString("provider"),
+                                        row.getString("consumer"),
+                                        row.getFloat("cost"),
+                                        row.getFloat("start"),
+                                        row.getFloat("end"),
+                                        row.getFloat("rating"),
+                                        row.getString("status")
+                                );
+                            })
+                    ;
+
+            return CompletableFuture.completedFuture(summaries);
+        };
     }
 
     /**
@@ -185,9 +214,9 @@ public class OrderServiceImpl implements OrderService{
      *
      * @throws BadRequest if Confirmation is a Rejected
      */
-    private OrderCommand.Accepted handleConfirmation(OrderCommand.Confirmation confirmation) {
-        if (confirmation instanceof OrderCommand.Accepted) {
-            return (OrderCommand.Accepted) confirmation;
+    private Accepted handleConfirmation(OrderCommand.Confirmation confirmation) {
+        if (confirmation instanceof Accepted) {
+            return (Accepted) confirmation;
         }
 
         OrderCommand.Rejected rejected = (OrderCommand.Rejected) confirmation;

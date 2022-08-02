@@ -17,8 +17,8 @@ public class OrderParam {
     String provider;
     String consumer;
     Float cost;
-    Long start;
-    Long end;
+    Float start;
+    Float end;
     Float rating;
     String status;
 
