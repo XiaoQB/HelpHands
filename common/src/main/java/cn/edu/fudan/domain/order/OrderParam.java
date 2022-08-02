@@ -27,6 +27,7 @@ public class OrderParam {
                     .id(id)
                     .service(service)
                     .provider(provider)
+                    .consumer(consumer)
                     .cost(cost)
                     .start(start)
                     .end(end)

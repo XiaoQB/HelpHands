@@ -77,7 +77,16 @@ public class OrderServiceImpl implements OrderService{
      */
     @Override
     public ServiceCall<OrderParam, OrderDTO> modify(String id) {
-        return null;
+        return request -> {
+            request.setId(id);
+            // Look up the aggregate instance for the given ID.
+            EntityRef<OrderCommand> ref = entityRefFor(id);
+            return ref.
+                    <OrderCommand.Confirmation>ask(
+                    replyTo -> new OrderCommand.UpdateById(request, replyTo), askTimeout)
+                    .thenApply(this::handleConfirmation)
+                    .thenApply(accepted -> (OrderDTO) accepted.get());
+        };
     }
 
     /**
