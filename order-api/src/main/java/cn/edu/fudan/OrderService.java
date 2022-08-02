@@ -10,6 +10,10 @@ import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.broker.Topic;
 import com.lightbend.lagom.javadsl.api.broker.kafka.KafkaProperties;
 import com.lightbend.lagom.javadsl.api.transport.Method;
+import play.libs.F;
+
+import java.util.List;
+
 import static com.lightbend.lagom.javadsl.api.Service.restCall;
 import static com.lightbend.lagom.javadsl.api.Service.topic;
 
@@ -43,7 +47,7 @@ public interface OrderService extends Service{
      * Gets all the orders placed by the authenticated consumer.
      * @return orders
      */
-    ServiceCall<NotUsed, Source<OrderDTO, ?>> getAll();
+    ServiceCall<NotUsed, List<OrderDTO>> getAll();
 
     /**
      * Gets the details of the order with the specified :id and placed by the authenticated consumer.
@@ -68,7 +72,7 @@ public interface OrderService extends Service{
      * Adds to the latest ratings for the order.
      * @return updated OrderDTO
      */
-    ServiceCall<OrderParam, OrderDTO> rate();
+    ServiceCall<OrderParam, OrderDTO> rate(String id, Float rating);
 
     /**
      * Deletes the order with the specified ID for the authenticated consumer.

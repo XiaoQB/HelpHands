@@ -5,7 +5,6 @@ import akka.cluster.sharding.typed.javadsl.ClusterSharding;
 import akka.cluster.sharding.typed.javadsl.Entity;
 import akka.cluster.sharding.typed.javadsl.EntityRef;
 import akka.japi.Pair;
-import akka.stream.javadsl.Source;
 import cn.edu.fudan.OrderCommand.Accepted;
 import cn.edu.fudan.domain.order.OrderDTO;
 import cn.edu.fudan.domain.order.OrderParam;
@@ -19,8 +18,10 @@ import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 
 import javax.inject.Inject;
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 /**
  * @author XiaoQuanbin
@@ -57,28 +58,25 @@ public class OrderServiceImpl implements OrderService{
      * @return orders
      */
     @Override
-    public ServiceCall<NotUsed, Source<OrderDTO, ?>> getAll() {
+    public ServiceCall<NotUsed, List<OrderDTO>> getAll() {
         return request -> {
-            Source<OrderDTO, ?> summaries =
+            CompletionStage<List<OrderDTO>> summaries =
                     cassandraSession
-                            .select(OrderConfig.SELECT_ALL_STATEMENT)
-                            .map(row -> {
-                                System.out.println(row);
-                                return new OrderDTO(
-                                        row.getString("id"),
-                                        row.getString("service"),
-                                        row.getString("provider"),
-                                        row.getString("consumer"),
-                                        row.getFloat("cost"),
-                                        row.getFloat("start"),
-                                        row.getFloat("end"),
-                                        row.getFloat("rating"),
-                                        row.getString("status")
-                                );
-                            })
-                    ;
+                            .selectAll(OrderConfig.SELECT_ALL_STATEMENT)
+                            .thenApply(list -> list.stream().map(row -> OrderDTO.builder()
+                                    .id(row.getString("id"))
+                                    .service(row.getString("service"))
+                                    .provider(row.getString("provider"))
+                                    .consumer(row.getString("consumer"))
+                                    .cost(row.getFloat("cost"))
+                                    .start(row.getFloat("start"))
+                                    .end(row.getFloat("end"))
+                                    .rating(row.getFloat("rating"))
+                                    .status(row.getString("status"))
+                                    .build()
+                            ).collect(Collectors.toList()));
 
-            return CompletableFuture.completedFuture(summaries);
+            return summaries.toCompletableFuture();
         };
     }
 
@@ -145,8 +143,18 @@ public class OrderServiceImpl implements OrderService{
      * @return updated OrderDTO
      */
     @Override
-    public ServiceCall<OrderParam, OrderDTO> rate() {
-        return null;
+    public ServiceCall<OrderParam, OrderDTO> rate(String id, Float rating) {
+        return request -> {
+            request.setId(id);
+            request.setRating(rating);
+            // Look up the aggregate instance for the given ID.
+            EntityRef<OrderCommand> ref = entityRefFor(id);
+            return ref.
+                    <OrderCommand.Confirmation>ask(
+                    replyTo -> new OrderCommand.UpdateById(request, replyTo), askTimeout)
+                    .thenApply(this::handleConfirmation)
+                    .thenApply(accepted -> (OrderDTO) accepted.get());
+        };
     }
 
     /**
