@@ -138,26 +138,6 @@ public class OrderServiceImpl implements OrderService{
     }
 
     /**
-     * Adds to the latest ratings for the order.
-     *
-     * @return updated OrderDTO
-     */
-    @Override
-    public ServiceCall<OrderParam, OrderDTO> rate(String id, Float rating) {
-        return request -> {
-            request.setId(id);
-            request.setRating(rating);
-            // Look up the aggregate instance for the given ID.
-            EntityRef<OrderCommand> ref = entityRefFor(id);
-            return ref.
-                    <OrderCommand.Confirmation>ask(
-                    replyTo -> new OrderCommand.UpdateById(request, replyTo), askTimeout)
-                    .thenApply(this::handleConfirmation)
-                    .thenApply(accepted -> (OrderDTO) accepted.get());
-        };
-    }
-
-    /**
      * Deletes the order with the specified ID for the authenticated consumer.
      *
      * @param id

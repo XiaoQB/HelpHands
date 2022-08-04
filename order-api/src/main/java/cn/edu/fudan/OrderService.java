@@ -34,7 +34,6 @@ public interface OrderService extends Service{
                 restCall(Method.GET, "/orders/:id", this::get),
                 restCall(Method.PUT, "/orders/:id", this::modify),
                 restCall(Method.POST, "/orders", this::add),
-                restCall(Method.PUT, "/orders/:id/rate", this::rate),
                 restCall(Method.DELETE, "/orders/:id", this::delete)
         ).withTopics(
                 topic("order-events", this::orderEvent)
@@ -68,11 +67,6 @@ public interface OrderService extends Service{
      */
     ServiceCall<OrderParam, OrderDTO> add();
 
-    /**
-     * Adds to the latest ratings for the order.
-     * @return updated OrderDTO
-     */
-    ServiceCall<OrderParam, OrderDTO> rate(String id, Float rating);
 
     /**
      * Deletes the order with the specified ID for the authenticated consumer.
