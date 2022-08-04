@@ -63,6 +63,50 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven-version</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <!-- Lagom requires at least Maven version 3.2.1 -->
+                                <requireMavenVersion>
+                                    <version>[3.2.1,)</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.26.1</version>
+                <configuration>
+                    <skip>true</skip>
+                    <images>
+                        <image>
+                            <name>%a:%l</name>
+                            <build>
+                                <from>openjdk:8-jre-alpine</from>
+                                <tags>
+                                    <tag>latest</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                                <assembly>
+                                    <descriptorRef>artifact-with-dependencies</descriptorRef>
+                                </assembly>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -86,6 +130,23 @@
                 <artifactId>lombok</artifactId>
                 <version>1.18.8</version>
             </dependency>
+
+            <!-- reactive-lib service locator -->
+            <dependency>
+                <groupId>com.lightbend.rp</groupId>
+                <artifactId>reactive-lib-akka-cluster-bootstrap_${scala.binary.version}</artifactId>
+                <version>${reactive.lib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lightbend.rp</groupId>
+                <artifactId>reactive-lib-akka-management_${scala.binary.version}</artifactId>
+                <version>${reactive.lib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lightbend.rp</groupId>
+                <artifactId>reactive-lib-service-discovery-lagom14-java_${scala.binary.version}</artifactId>
+                <version>${reactive.lib.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -95,5 +156,6 @@
         <scala.binary.version>2.12</scala.binary.version>
         
         <lagom.version>1.6.8-RC1</lagom.version>
+        <reactive.lib.version>1.7.0</reactive.lib.version>
     </properties>
 </project>

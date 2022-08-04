@@ -52,6 +52,19 @@
             <groupId>cn.edu.fudan</groupId>
             <artifactId>common</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.lightbend.rp</groupId>
+            <artifactId>reactive-lib-akka-cluster-bootstrap_${scala.binary.version}</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.lightbend.rp</groupId>
+            <artifactId>reactive-lib-akka-management_${scala.binary.version}</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.lightbend.rp</groupId>
+            <artifactId>reactive-lib-service-discovery-lagom14-java_${scala.binary.version}</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -62,6 +75,23 @@
                 <configuration>
                     <lagomService>true</lagomService>
                     <cassandraPort>9042</cassandraPort>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                    <images>
+                        <image>
+                            <build>
+                                <entryPoint>
+                                    java $JAVA_OPTS -cp '/maven/*' play.core.server.ProdServerStart
+                                </entryPoint>
+                            </build>
+                        </image>
+                    </images>
                 </configuration>
             </plugin>
         </plugins>
