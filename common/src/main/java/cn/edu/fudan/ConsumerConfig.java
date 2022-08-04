@@ -5,7 +5,7 @@ package cn.edu.fudan;
  * @date 2022/7/26
  */
 public class ConsumerConfig {
-    public static final String TABLE_NAME = "consumers";
+    public static final String TABLE_NAME = "consumer";
     public static final String READ_SIDE_ID = "consumerSummaryOffset";
     public static final String SELECT_ALL_STATEMENT =
             String.format("SELECT id, name, address, mobile, email, geo FROM %s ", TABLE_NAME);
