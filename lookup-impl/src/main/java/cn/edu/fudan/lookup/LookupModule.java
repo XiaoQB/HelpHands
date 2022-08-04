@@ -1,5 +1,7 @@
 package cn.edu.fudan.lookup;
 
+import cn.edu.fudan.ConsumerService;
+import cn.edu.fudan.OrderService;
 import cn.edu.fudan.lookup.api.LookupService;
 import cn.edu.fudan.provider.ProviderService;
 import cn.edu.fudan.service.ServiceService;
@@ -14,6 +16,8 @@ public class LookupModule extends AbstractModule implements ServiceGuiceSupport 
     @Override
     protected void configure() {
         bindService(LookupService.class, LookupServiceImpl.class);
+        bindClient(OrderService.class);
+        bindClient(ConsumerService.class);
         bindClient(ProviderService.class);
         bindClient(ServiceService.class);
         bind(StreamSubscriber.class).asEagerSingleton();

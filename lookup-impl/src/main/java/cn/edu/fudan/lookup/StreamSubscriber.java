@@ -2,6 +2,10 @@ package cn.edu.fudan.lookup;
 
 import akka.Done;
 import akka.stream.javadsl.Flow;
+import cn.edu.fudan.ConsumerEventPublish;
+import cn.edu.fudan.ConsumerService;
+import cn.edu.fudan.OrderEventPublish;
+import cn.edu.fudan.OrderService;
 import cn.edu.fudan.provider.ProviderService;
 import cn.edu.fudan.provider.ProviderEventPublish;
 import cn.edu.fudan.service.ServiceEventPublish;
@@ -19,7 +23,11 @@ public class StreamSubscriber {
     public StreamSubscriber(ProviderService providerService,
                             ProviderRepository providerRepository,
                             ServiceService serviceService,
-                            ServiceRepository serviceRepository) {
+                            ServiceRepository serviceRepository,
+                            OrderService orderService,
+                            OrderRepository orderRepository,
+                            ConsumerService consumerService,
+                            ConsumerRepository consumerRepository) {
         // Create a subscriber
         providerService.providerEvent().subscribe()
                 .withGroupId("lookup-provider")
@@ -70,5 +78,56 @@ public class StreamSubscriber {
                             }
                         })
                 );
+
+        orderService.orderEvent().subscribe()
+                .withGroupId("lookup-order")
+                // And subscribe to it with at least once processing semantics.
+                .atLeastOnce(
+                        // Create a flow that emits a Done for each message it processes
+                        Flow.<OrderEventPublish>create().mapAsync(1, event -> {
+                            if (event instanceof OrderEventPublish.OrderAdded) {
+                                OrderEventPublish.OrderAdded messageChanged =
+                                        (OrderEventPublish.OrderAdded) event;
+                                return orderRepository.addOrder(messageChanged.getOrderDTO());
+                            } else if (event instanceof OrderEventPublish.OrderUpdated) {
+                                OrderEventPublish.OrderUpdated messageChanged =
+                                        (OrderEventPublish.OrderUpdated) event;
+                                return orderRepository.updateOrder(messageChanged.getOrderDTO());
+                            } else if (event instanceof OrderEventPublish.OrderDeleted) {
+                                OrderEventPublish.OrderDeleted messageChanged =
+                                        (OrderEventPublish.OrderDeleted) event;
+                                return orderRepository.deleteOrder(messageChanged.getOrderId());
+                            } else {
+                                // Ignore all others events
+                                return CompletableFuture.completedFuture(Done.getInstance());
+                            }
+                        })
+                );
+
+        consumerService.consumerEvent().subscribe()
+                .withGroupId("lookup-consumer")
+                // And subscribe to it with at least once processing semantics.
+                .atLeastOnce(
+                        // Create a flow that emits a Done for each message it processes
+                        Flow.<ConsumerEventPublish>create().mapAsync(1, event -> {
+                            if (event instanceof ConsumerEventPublish.ConsumerAdded) {
+                                ConsumerEventPublish.ConsumerAdded messageChanged =
+                                        (ConsumerEventPublish.ConsumerAdded) event;
+                                return consumerRepository.addConsumer(messageChanged.getConsumerDTO());
+                            } else if (event instanceof ConsumerEventPublish.ConsumerUpdated) {
+                                ConsumerEventPublish.ConsumerUpdated messageChanged =
+                                        (ConsumerEventPublish.ConsumerUpdated) event;
+                                return consumerRepository.updateConsumer(messageChanged.getConsumerDTO());
+                            } else if (event instanceof ConsumerEventPublish.ConsumerDeleted) {
+                                ConsumerEventPublish.ConsumerDeleted messageChanged =
+                                        (ConsumerEventPublish.ConsumerDeleted) event;
+                                return consumerRepository.deleteConsumer(messageChanged.getConsumerId());
+                            } else {
+                                // Ignore all others events
+                                return CompletableFuture.completedFuture(Done.getInstance());
+                            }
+                        })
+                );
+
     }
 }
