@@ -7,10 +7,13 @@ import akka.persistence.typed.PersistenceId;
 import akka.persistence.typed.javadsl.*;
 import cn.edu.fudan.domain.consumer.ConsumerDTO;
 import cn.edu.fudan.domain.consumer.ConsumerParam;
+import com.lightbend.lagom.javadsl.persistence.AkkaTaggerAdapter;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
 
 /**
  * @author XiaoQuanbin
@@ -25,6 +28,7 @@ public class ConsumerEntity
 
     final private EntityContext<ConsumerCommand> entityContext;
     final private String entityId;
+    private final Function<ConsumerEvent, Set<String>> tagger;
 
 
     ConsumerEntity(EntityContext<ConsumerCommand> entityContext) {
@@ -37,10 +41,17 @@ public class ConsumerEntity
         );
         this.entityContext = entityContext;
         this.entityId = entityContext.getEntityId();
+        this.tagger = AkkaTaggerAdapter.fromLagom(entityContext, ConsumerEvent.TAG);
+
     }
 
     public static ConsumerEntity create(EntityContext<ConsumerCommand> entityContext) {
         return new ConsumerEntity(entityContext);
+    }
+
+    @Override
+    public Set<String> tagsFor(ConsumerEvent consumerEvent) {
+        return tagger.apply(consumerEvent);
     }
 
     @Override
