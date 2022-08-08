@@ -87,14 +87,14 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>0.26.1</version>
+                <version>0.39.1</version>
                 <configuration>
                     <skip>true</skip>
                     <images>
                         <image>
                             <name>%a:%l</name>
                             <build>
-                                <from>openjdk:8-jre-alpine</from>
+                                <from>${lagom.docker.image}</from>
                                 <tags>
                                     <tag>latest</tag>
                                     <tag>${project.version}</tag>
@@ -102,10 +102,16 @@
                                 <assembly>
                                     <descriptorRef>artifact-with-dependencies</descriptorRef>
                                 </assembly>
+                                <createImageOptions>
+                                    <platform>linux/amd64</platform>
+                                </createImageOptions>
                             </build>
                         </image>
+
                     </images>
+
                 </configuration>
+
             </plugin>
         </plugins>
     </build>
@@ -131,21 +137,16 @@
                 <version>1.18.8</version>
             </dependency>
 
-            <!-- reactive-lib service locator -->
+            <!-- deploy -->
             <dependency>
-                <groupId>com.lightbend.rp</groupId>
-                <artifactId>reactive-lib-akka-cluster-bootstrap_${scala.binary.version}</artifactId>
-                <version>${reactive.lib.version}</version>
+                <groupId>com.lightbend.lagom</groupId>
+                <artifactId>lagom-javadsl-akka-discovery-service-locator_${scala.binary.version}</artifactId>
+                <version>${lagom.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.lightbend.rp</groupId>
-                <artifactId>reactive-lib-akka-management_${scala.binary.version}</artifactId>
-                <version>${reactive.lib.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.lightbend.rp</groupId>
-                <artifactId>reactive-lib-service-discovery-lagom14-java_${scala.binary.version}</artifactId>
-                <version>${reactive.lib.version}</version>
+                <groupId>com.lightbend.akka.discovery</groupId>
+                <artifactId>akka-discovery-kubernetes-api_${scala.binary.version}</artifactId>
+                <version>${akka.management.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -157,5 +158,7 @@
         
         <lagom.version>1.6.8-RC1</lagom.version>
         <reactive.lib.version>1.7.0</reactive.lib.version>
+        <akka.management.version>1.0.10</akka.management.version>
+        <lagom.docker.image>adoptopenjdk/openjdk8</lagom.docker.image>
     </properties>
 </project>

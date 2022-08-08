@@ -50,30 +50,24 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- deploy -->
         <dependency>
-            <groupId>com.lightbend.rp</groupId>
-            <artifactId>reactive-lib-akka-cluster-bootstrap_${scala.binary.version}</artifactId>
+            <groupId>com.lightbend.lagom</groupId>
+            <artifactId>lagom-javadsl-akka-discovery-service-locator_${scala.binary.version}</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.lightbend.rp</groupId>
-            <artifactId>reactive-lib-akka-management_${scala.binary.version}</artifactId>
+            <groupId>com.lightbend.akka.discovery</groupId>
+            <artifactId>akka-discovery-kubernetes-api_${scala.binary.version}</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.lightbend.rp</groupId>
-            <artifactId>reactive-lib-service-discovery-lagom14-java_${scala.binary.version}</artifactId>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-discovery_${scala.binary.version}</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>com.lightbend.lagom</groupId>
-                <artifactId>lagom-maven-plugin</artifactId>
-                <configuration>
-                    <lagomService>true</lagomService>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>com.lightbend.lagom</groupId>
                 <artifactId>lagom-maven-plugin</artifactId>
@@ -96,6 +90,15 @@
                         </image>
                     </images>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>build-docker-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

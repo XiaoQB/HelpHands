@@ -1,0 +1,58 @@
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: "hello"
+  labels:
+    appName: hello
+    appNameVersion: "hello-latest"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      appNameVersion: "hello-latest"
+  template:
+    metadata:
+      labels:
+        appName: hello
+        appNameVersion: "hello-latest"
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: hello
+          image: "registry.cn-shanghai.aliyuncs.com/helphands/helphands-impl:latest"
+          imagePullPolicy: Always
+          env:
+            - name: APPLICATION_SECRET
+              value: "123445"
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx256m -Dconfig.resource=prod-application.conf"
+            - name: KAFKA_SERVICE
+              value: "kafka"
+          ports:
+            - containerPort: 10000
+              name: http
+          volumeMounts: []
+          resources:
+            limits:
+              cpu: 0.15
+              memory: 256Mi
+            requests:
+              cpu: 0.15
+              memory: 256Mi
+
+      volumes: []
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    appName: hello
+  name: hello
+spec:
+  ports:
+    - name: http
+      port: 10000
+      protocol: TCP
+      targetPort: 10000
+  selector:
+    appName: hello

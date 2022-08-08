@@ -1,6 +1,8 @@
 repository=registry.cn-shanghai.aliyuncs.com/helphands
 version=${1:-latest}
 
+mvn package docker:build -Dmaven.test.skip
+
 image1=helphands-impl:$version
 image2=helphands-stream-impl:$version
 docker tag $image1 $repository/$image1
