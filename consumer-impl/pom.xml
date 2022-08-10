@@ -54,6 +54,20 @@
         <groupId>cn.edu.fudan</groupId>
         <artifactId>common</artifactId>
     </dependency>
+
+    <!-- deploy -->
+    <dependency>
+        <groupId>com.lightbend.lagom</groupId>
+        <artifactId>lagom-javadsl-akka-discovery-service-locator_${scala.binary.version}</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.lightbend.akka.discovery</groupId>
+        <artifactId>akka-discovery-kubernetes-api_${scala.binary.version}</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.typesafe.akka</groupId>
+        <artifactId>akka-discovery_${scala.binary.version}</artifactId>
+    </dependency>
 </dependencies>
 
 <build>
@@ -65,6 +79,44 @@
                 <lagomService>true</lagomService>
                 <cassandraPort>9042</cassandraPort>
             </configuration>
+        </plugin>
+
+        <plugin>
+            <groupId>com.lightbend.lagom</groupId>
+            <artifactId>lagom-maven-plugin</artifactId>
+            <configuration>
+                <lagomService>true</lagomService>
+            </configuration>
+        </plugin>
+
+        <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <configuration>
+                <skip>false</skip>
+                <images>
+                    <image>
+                        <build>
+                            <maintainer>21210240045@m.fudan.edu.cn</maintainer>
+                            <tags>
+                                <tag>${project.version}</tag>
+                            </tags>
+                            <entryPoint>
+                                java $JAVA_OPTS -Dconfig.resource=prod-application.conf -cp '/maven/*' play.core.server.ProdServerStart
+                            </entryPoint>
+                        </build>
+                    </image>
+                </images>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>build-docker-image</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>build</goal>
+                    </goals>
+                </execution>
+            </executions>
         </plugin>
     </plugins>
 </build>
