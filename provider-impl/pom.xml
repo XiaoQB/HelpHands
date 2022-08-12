@@ -103,6 +103,9 @@
                     <images>
                         <image>
                             <build>
+                                <buildOptions>
+                                    <platform>linux/arm64,linux/amd64</platform>
+                                </buildOptions>
                                 <tags>
                                     <tag>${project.version}</tag>
                                 </tags>

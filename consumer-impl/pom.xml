@@ -98,6 +98,9 @@
                     <image>
                         <build>
                             <maintainer>21210240045@m.fudan.edu.cn</maintainer>
+                            <buildOptions>
+                                <platform>linux/arm64,linux/amd64</platform>
+                            </buildOptions>
                             <tags>
                                 <tag>${project.version}</tag>
                             </tags>
