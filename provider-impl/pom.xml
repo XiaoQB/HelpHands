@@ -104,7 +104,7 @@
                         <image>
                             <build>
                                 <buildOptions>
-                                    <platform>linux/arm64,linux/amd64</platform>
+                                    <platform>linux/x86_64</platform>
                                 </buildOptions>
                                 <tags>
                                     <tag>${project.version}</tag>

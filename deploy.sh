@@ -7,14 +7,14 @@ version=1.0-SNAPSHOT
 # shellcheck disable=SC2039
 declare -a arr=("consumer" "order" "provider" "service" "lookup")
 
-# shellcheck disable=SC2039
-#for i in "${arr[@]}"
-#do
-#   echo "building image of ""$i"
-#   cd "$i"-api && mvn package install
-#   cd ../"$i"-impl && mvn package docker:build
-#   cd ..
-#done
+ shellcheck disable=SC2039
+for i in "${arr[@]}"
+do
+   echo "building image of ""$i"
+   cd "$i"-api && mvn package install
+   cd ../"$i"-impl && mvn package docker:build
+   cd ..
+done
 
 for i in "${arr[@]}"
 do
